@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2F5BEA">
+<title>Темп</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F4F7;--card:#fff;--ink:#14212B;--mut:#5E6D79;--line:#DCE3E9;--acc:#2F5BEA;--accInk:#fff;--warm:#E58A12;--ok:#1E9E6A;--bad:#D6453D;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101820;--card:#18232D;--ink:#EAF0F5;--mut:#98A8B5;--line:#2A3844;--acc:#6D8DFF;--accInk:#0C1220;--warm:#F2A03A;--ok:#43C690;--bad:#F0726A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101820;--card:#18232D;--ink:#EAF0F5;--mut:#98A8B5;--line:#2A3844;--acc:#6D8DFF;--accInk:#0C1220;--warm:#F2A03A;--ok:#43C690;--bad:#F0726A;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:17px;line-height:1.45}
+main{max-width:560px;margin:0 auto;padding:84px 16px 40px}
+h1{font-size:30px;font-weight:800;margin:4px 0 4px;letter-spacing:-.02em}
+h2{font-size:19px;font-weight:800;margin:0 0 10px}
+.sub{color:var(--mut);font-size:15px;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px}
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px;font-weight:600}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-height:52px;font-size:17px}
+textarea{min-height:70px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;min-height:52px;padding:0 18px;font-size:17px;background:var(--acc);color:var(--accInk);cursor:pointer}
+button.sec{background:var(--bg);color:var(--ink);border:1px solid var(--line)}
+button.del{background:transparent;color:var(--bad);min-height:36px;padding:0 8px;flex:0}
+.big{font-size:38px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.bar{height:10px;background:var(--bg);border-radius:6px;overflow:hidden;margin:6px 0 2px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:6px}
+.bar i.warm{background:var(--warm)}.bar i.ok{background:var(--ok)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:16px}.kv:last-child{border:0}.kv b{font-weight:800}
+.meal{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}.meal span:first-child{flex:1}.meal small{color:var(--mut)}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;background:none;color:var(--mut);border-radius:0;min-height:56px;font-size:11px;font-weight:600;padding:0 2px}.ex{padding:8px 0;border-bottom:1px solid var(--line)}.ex:last-of-type{border:0}.ex small{color:var(--mut)}.ex summary{cursor:pointer;min-height:32px}.cb{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.cb input{width:22px;min-height:22px;flex:0}.cb span{flex:1}.cb.dn span{text-decoration:line-through;color:var(--mut)}
+nav button.on{color:var(--acc);box-shadow:inset 0 3px 0 var(--acc)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips button{min-height:46px;font-size:16px;padding:0 16px}
+.pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:13px;font-weight:700;background:var(--bg);border:1px solid var(--line)}
+svg text{fill:var(--mut);font-size:10px;font-family:inherit}
+.empty{color:var(--mut);text-align:center;padding:18px 6px;font-size:14px}
+.hist{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;background:var(--card);color:var(--ink);border:1px solid var(--line);margin-bottom:8px;min-height:56px;padding:8px 12px}
+.hist small{color:var(--mut);display:block;font-weight:400}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+#toast.on{opacity:1}
+
+#hd{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--bg);border-bottom:1px solid var(--line)}
+#bg{flex:0 0 52px;width:52px;padding:0;background:var(--card);color:var(--ink);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+#ttl{font-size:21px;font-weight:800}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+#dr{position:fixed;top:0;bottom:0;left:0;width:min(84vw,330px);background:var(--card);z-index:40;transform:translateX(-102%);transition:transform .25s;padding:calc(22px + env(safe-area-inset-top,0px)) 14px 24px;overflow:auto;box-shadow:4px 0 24px rgba(0,0,0,.25)}
+body.open #ov{opacity:1;pointer-events:auto}body.open #dr{transform:none}
+#dr .brand{font-size:26px;font-weight:800;margin:0 10px 4px}#dr .bs{color:var(--mut);font-size:14px;margin:0 10px 18px}
+#dr button.it{display:block;width:100%;text-align:left;background:none;color:var(--ink);font-size:19px;min-height:60px;border-radius:16px;padding:0 18px;margin-bottom:6px;font-weight:600}
+#dr button.it.on{background:var(--acc);color:var(--accInk);font-weight:800}
+.acc>h2{cursor:pointer;margin:0;display:flex;justify-content:space-between;align-items:center;min-height:36px}
+.acc>h2::after{content:'›';font-size:30px;line-height:1;color:var(--mut);transform:rotate(90deg);transition:transform .2s}
+.acc.op>h2::after{transform:rotate(-90deg)}
+.acc .bd{display:none;margin-top:12px}.acc.op .bd{display:block}
+
+:root{--bg:#F2F4F7;--card:#FFFFFF;--ink:#0E1620;--mut:#5A6675;--line:#E2E7ED;--acc:#E5370A;--accInk:#FFFFFF;--warm:#F59E0B;--ok:#0E9F6E;--bad:#D92D20;--hero1:#E5370A;--hero2:#FF8A00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B0E13;--card:#151A22;--ink:#F3F6FA;--mut:#8D9AAB;--line:#242C37;--acc:#FF6A2F;--accInk:#0B0E13;--warm:#FFB020;--ok:#35D399;--bad:#FF6B63;--hero1:#FF5A1F;--hero2:#FFA31A}}
+:root[data-theme="dark"]{--bg:#0B0E13;--card:#151A22;--ink:#F3F6FA;--mut:#8D9AAB;--line:#242C37;--acc:#FF6A2F;--accInk:#0B0E13;--warm:#FFB020;--ok:#35D399;--bad:#FF6B63;--hero1:#FF5A1F;--hero2:#FFA31A}
+h1,h2,#ttl,#dr .brand,.big{font-family:Oswald,Impact,"Arial Narrow",sans-serif;text-transform:uppercase;letter-spacing:.03em}
+h1{font-size:34px;font-weight:700;line-height:1.05;margin:2px 0 6px}
+h1::after{content:"";display:block;width:46px;height:5px;border-radius:3px;margin-top:8px;background:linear-gradient(90deg,var(--hero1),var(--hero2))}
+h2{font-size:20px;font-weight:700}
+#ttl{font-size:24px;font-weight:700}
+.card{border:1px solid var(--line);box-shadow:0 1px 0 rgba(255,255,255,.03),0 8px 24px -16px rgba(0,0,0,.35)}
+.card.hero{background:linear-gradient(135deg,var(--hero1),var(--hero2));border:0;color:#0B0E13;box-shadow:0 14px 30px -14px var(--hero1)}
+.card.hero .sub,.card.hero .big span{color:rgba(11,14,19,.72)!important}
+.card.hero .bar{background:rgba(11,14,19,.22);border:0}.card.hero .bar i,.card.hero .bar i.ok,.card.hero .bar i.warm{background:#0B0E13}
+.big{font-weight:700;letter-spacing:.01em}
+button{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#0B0E13;font-weight:800;letter-spacing:.01em;box-shadow:0 8px 18px -10px var(--hero1)}
+button:active{transform:scale(.98)}
+button.sec,button.del,#bg,#dr button.it,.chips button.sec{background:var(--card);color:var(--ink);box-shadow:none}
+button.del{background:transparent;color:var(--bad)}
+.chips button:not(.sec){background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#0B0E13}
+#hd{background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+#dr button.it.on{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#0B0E13}
+#dr .brand{font-size:30px}
+.bar{height:12px}.bar i{background:linear-gradient(90deg,var(--hero1),var(--hero2))}.bar i.ok{background:var(--ok)}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);outline:2px solid color-mix(in srgb,var(--acc) 40%,transparent)}
+.pill{background:var(--acc);color:#0B0E13;border:0}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<header id="hd"><button id="bg" onclick="openDr()" aria-label="Открыть меню"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span id="ttl"></span></header><div id="ov" onclick="closeDr()"></div><aside id="dr"></aside>
+<div id="toast"></div>
+<script>
+const KEY='temp_app_v1';
+let S={profile:null,days:{},theme:'auto'};
+let tab='today',date=iso(new Date()),range=14,metric='weight';
+function iso(d){const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())}
+function load(){try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Не удалось сохранить: хранилище недоступно')}}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)}
+const $=id=>document.getElementById(id);
+const ACT={'1.2':'Сидячий','1.375':'Умеренно активный','1.55':'Высокоактивный'};
+const GOAL={loss:'Снижение жира',gain:'Набор массы',keep:'Поддержание'};
+function calc(p){
+  if(!p)return null;
+  const w=p.weight,bmr=10*w+6.25*p.height-5*p.age+(p.sex==='m'?5:-161);
+  const tdee=bmr*p.act;
+  let k=tdee*(p.goal==='loss'?0.82:p.goal==='gain'?1.1:1);
+  if(p.goal==='loss')k=Math.max(k,bmr);
+  const prot=w*(p.goal==='loss'?2.0:p.goal==='gain'?1.8:1.6);
+  const fat=Math.max(w*0.9,k*0.2/9);
+  const carb=Math.max(0,(k-prot*4-fat*9)/4);
+  return{bmr:Math.round(bmr),tdee:Math.round(tdee),kcal:Math.round(k),prot:Math.round(prot),fat:Math.round(fat),carb:Math.round(carb),fiber:Math.max(25,Math.round(k/1000*14)),water:Math.round(w*30/50)*50,bmi:(w/Math.pow(p.height/100,2)).toFixed(1)};
+}
+function day(d){return S.days[d]||(S.days[d]={m:{},weight:null,meals:[],water:0,workout:{done:false,type:'',min:0},note:''})}
+function totals(d){const x=S.days[d],z={kcal:0,prot:0,fat:0,carb:0};if(!x)return z;return x.meals.reduce((a,m)=>({kcal:a.kcal+m.kcal,prot:a.prot+m.prot,fat:a.fat+(m.fat||0),carb:a.carb+(m.carb||0)}),z)}
+function curWeight(){const ds=Object.keys(S.days).filter(k=>S.days[k].weight).sort();return ds.length?S.days[ds[ds.length-1]].weight:(S.profile?S.profile.weight:null)}
+function fmtDate(d){const t=new Date(d+'T12:00:00');return t.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'})}
+function pct(a,b){return b?Math.min(100,Math.round(a/b*100)):0}
+
+let _lt='';
+function render(){const SY=window.scrollY||0;
+  document.documentElement.dataset.theme=S.theme==='auto'?'':S.theme;
+  if(!S.profile&&tab!=='profile')tab='profile';
+  const names=[['today','Сегодня'],['plan','План'],['menu','Питание'],['stats','Статистика'],['history','История'],['profile','Профиль']];
+  $('dr').innerHTML='<div class="brand">Темп</div><div class="bs">Тренировки и питание</div>'+names.map(n=>`<button class="it ${tab===n[0]?'on':''}" onclick="go('${n[0]}')">${n[1]}</button>`).join('');$('ttl').textContent=(names.find(n=>n[0]===tab)||names[0])[1];
+  $('app').innerHTML=banner()+({today:vToday,plan:vPlan,menu:vMenu,stats:vStats,history:vHistory,profile:vProfile})[tab]();
+  if(tab==='today')lf();acc();if(_lt!==tab){window.scrollTo(0,0);_lt=tab}else window.scrollTo(0,SY);
+}
+function go(t){tab=t;closeDr();render()}
+function openDr(){document.body.classList.add('open')}
+function closeDr(){document.body.classList.remove('open')}
+
+function vToday(){
+  const c=calc(S.profile),x=S.days[date]||{weight:null,meals:[],water:0,workout:{done:false,type:'',min:0},note:''},t=totals(date);
+  const left=c.kcal-t.kcal;
+  return `<h1>${date===iso(new Date())?'Сегодня':'День'}</h1>
+  <div class="row" style="margin-bottom:12px"><button class="sec" style="flex:0" onclick="shift(-1)" aria-label="Предыдущий день">‹</button><input type="date" value="${date}" onchange="date=this.value;render()"><button class="sec" style="flex:0" onclick="shift(1)" aria-label="Следующий день">›</button></div>
+  <div class="card hero"><div class="sub" style="margin:0">Калории</div><div class="big">${t.kcal} <span style="font-size:16px;font-weight:600;color:var(--mut)">из ${c.kcal} ккал</span></div>
+  <div class="bar"><i class="${t.kcal>c.kcal*1.05?'warm':''}" style="width:${pct(t.kcal,c.kcal)}%"></i></div>
+  <div class="sub" style="margin:2px 0 10px">${left>=0?'Осталось '+left+' ккал':'Превышение '+(-left)+' ккал'}</div>
+  <div class="sub" style="margin:0">Белок: ${Math.round(t.prot)} из ${c.prot} г</div><div class="bar"><i class="ok" style="width:${pct(t.prot,c.prot)}%"></i></div><div class="sub" style="margin:8px 0 0">Жиры: ${Math.round(t.fat)} из ${c.fat} г · Углеводы: ${Math.round(t.carb)} из ${c.carb} г</div></div>
+  <div class="card"><h2>Приёмы пищи</h2>
+  ${mealList(x)}
+  ${foodForm()}</div>
+  <div class="card"><h2>Вес</h2><div class="row"><input id="wt" type="number" inputmode="decimal" step="0.1" value="${x.weight||''}" placeholder="кг"><button onclick="setW()">Сохранить вес</button></div></div>
+  <div class="card"><h2>Вода</h2><div class="big">${(x.water/1000).toFixed(2).replace('.',',')} <span style="font-size:16px;font-weight:600;color:var(--mut)">из ${(c.water/1000).toFixed(1).replace('.',',')} л</span></div>
+  <div class="bar"><i style="width:${pct(x.water,c.water)}%"></i></div>
+  <div class="row" style="margin-top:8px"><button class="sec" onclick="water(-250)">−250 мл</button><button onclick="water(250)">+250 мл</button><button onclick="water(500)">+500 мл</button></div></div>
+  ${planToday(date)}${logCard(x)}
+  ${measCard(x)}<div class="card"><h2>Заметка</h2><textarea id="nt" onchange="note()" placeholder="Самочувствие, сон, нагрузка">${esc(x.note)}</textarea></div>`;
+}
+function esc(s){return String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function shift(n){const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+n);date=iso(d);render()}
+function delMeal(i){day(date).meals.splice(i,1);save();render()}
+function setW(){const v=parseFloat($('wt').value);if(!(v>20&&v<400)){toast('Введите вес от 20 до 400 кг');return}day(date).weight=v;save();toast('Вес сохранён');render()}
+function water(n){const x=day(date);x.water=Math.max(0,x.water+n);save();render()}
+function wo(k){const w=day(date).workout;if(k==='done')w.done=!w.done;if(k==='type')w.type=$('wtp').value;if(k==='min')w.min=+$('wmn').value||0;save();if(k==='done')render()}
+function note(){day(date).note=$('nt').value;save();toast('Заметка сохранена')}
+
+function lastDays(n){const a=[];const d=new Date();for(let i=n-1;i>=0;i--){const t=new Date(d);t.setDate(d.getDate()-i);a.push(iso(t))}return a}
+function chart(vals,labels,opts){
+  const W=320,H=140,pl=30,pb=18,pt=8,pr=6,pts=vals.map((v,i)=>({v,i})).filter(p=>p.v!=null);
+  if(!pts.length)return '<div class="empty">Нет данных за период</div>';
+  let mn=Math.min(...pts.map(p=>p.v),opts.target!=null?opts.target:Infinity),mx=Math.max(...pts.map(p=>p.v),opts.target!=null?opts.target:-Infinity);
+  if(opts.zero)mn=0;if(mx===mn){mx+=1;mn-=1}const pad=opts.zero?0:(mx-mn)*0.15;mn-=pad;mx+=pad;if(opts.zero)mx*=1.08;
+  const n=vals.length,X=i=>pl+(n===1?0:i*(W-pl-pr)/(n-1)),Y=v=>pt+(H-pt-pb)*(1-(v-mn)/(mx-mn));
+  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${opts.label}">`;
+  for(let k=0;k<4;k++){const v=mn+(mx-mn)*k/3,y=Y(v);s+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${pl-4}" y="${y+3}" text-anchor="end">${Math.round(v*10)/10}</text>`}
+  if(opts.target!=null)s+=`<line x1="${pl}" x2="${W-pr}" y1="${Y(opts.target)}" y2="${Y(opts.target)}" stroke="var(--warm)" stroke-dasharray="4 3"/>`;
+  if(opts.bars){const bw=Math.max(3,(W-pl-pr)/n*0.6);pts.forEach(p=>{s+=`<rect x="${X(p.i)-bw/2}" y="${Y(p.v)}" width="${bw}" height="${Y(mn)-Y(p.v)}" rx="2" fill="var(--acc)"/>`})}
+  else{s+=`<polyline fill="none" stroke="var(--acc)" stroke-width="2.5" stroke-linejoin="round" points="${pts.map(p=>X(p.i)+','+Y(p.v)).join(' ')}"/>`+pts.map(p=>`<circle cx="${X(p.i)}" cy="${Y(p.v)}" r="3" fill="var(--acc)"/>`).join('')}
+  const st=Math.ceil(n/6);labels.forEach((l,i)=>{if(i%st===0)s+=`<text x="${X(i)}" y="${H-4}" text-anchor="middle">${l}</text>`});
+  return s+'</svg>';
+}
+function vStats(){
+  const c=calc(S.profile),ds=lastDays(range),lab=ds.map(d=>d.slice(8)+'.'+d.slice(5,7));
+  const get=d=>S.days[d];
+  const M={weight:{t:'Вес, кг',v:ds.map(d=>get(d)&&get(d).weight||null),o:{}},
+   kcal:{t:'Калории, ккал',v:ds.map(d=>get(d)&&get(d).meals.length?totals(d).kcal:null),o:{bars:1,zero:1,target:c.kcal}},
+   prot:{t:'Белок, г',v:ds.map(d=>get(d)&&get(d).meals.length?Math.round(totals(d).prot):null),o:{bars:1,zero:1,target:c.prot}},
+   water:{t:'Вода, мл',v:ds.map(d=>get(d)&&get(d).water?get(d).water:null),o:{bars:1,zero:1,target:c.water}},
+   min:{t:'Тренировки, минут',v:ds.map(d=>minOf(d)||null),o:{bars:1,zero:1}}};
+  [['waist','Талия'],['chest','Грудь'],['hips','Бёдра'],['arm','Рука']].forEach(a=>M[a[0]]={t:a[1]+', см',v:ds.map(d=>get(d)&&get(d).m&&get(d).m[a[0]]||null),o:{}});const m=M[metric];m.o.label=m.t;
+  const avg=a=>{const v=a.filter(x=>x!=null);return v.length?Math.round(v.reduce((p,q)=>p+q,0)/v.length):'—'};
+  const wd=ds.filter(d=>get(d)&&get(d).workout.done).length,logged=ds.filter(d=>get(d)&&(get(d).meals.length||get(d).weight||get(d).water)).length;
+  const ws=M.weight.v.filter(v=>v!=null),dw=ws.length>1?(ws[ws.length-1]-ws[0]).toFixed(1).replace('.',','):'—';
+  return `<h1>Статистика</h1><p class="sub">Собирается автоматически из ваших записей по дням</p>
+  <div class="chips" style="margin-bottom:12px">${[[7,'7 дней'],[14,'14 дней'],[30,'30 дней'],[90,'90 дней']].map(r=>`<button class="${range===r[0]?'':'sec'}" onclick="range=${r[0]};render()">${r[1]}</button>`).join('')}</div>
+  <div class="card"><div class="chips" style="margin-bottom:10px">${Object.keys(M).map(k=>`<button class="${metric===k?'':'sec'}" onclick="metric='${k}';render()">${M[k].t.split(',')[0]}</button>`).join('')}</div>
+  <h2>${m.t}</h2>${chart(m.v,lab,m.o)}${m.o.target!=null?'<div class="sub" style="margin:4px 0 0">Пунктир — ваша норма</div>':''}</div>
+  ${strCard(ds,lab)}<div class="card"><h2>За ${range} дн.</h2>
+  <div class="kv"><span>Дней с записями</span><b>${logged}</b></div>
+  <div class="kv"><span>Тренировок выполнено</span><b>${wd}</b></div>
+  <div class="kv"><span>Изменение веса</span><b>${dw}${dw==='—'?'':' кг'}</b></div>
+  <div class="kv"><span>Среднее: калории</span><b>${avg(M.kcal.v)}</b></div>
+  <div class="kv"><span>Среднее: белок</span><b>${avg(M.prot.v)} г</b></div>
+  <div class="kv"><span>Среднее: вода</span><b>${avg(M.water.v)} мл</b></div></div>`;
+}
+function vHistory(){
+  const ks=Object.keys(S.days).sort().reverse().filter(k=>{const x=S.days[k];return x.meals.length||x.weight||x.water||x.workout.done||x.note});
+  return `<h1>История</h1><p class="sub">Все дни, за которые есть записи. Нажмите, чтобы открыть и изменить.</p>
+  ${ks.length?ks.map(k=>{const x=S.days[k],t=totals(k);return `<button class="hist" onclick="date='${k}';go('today')"><span>${fmtDate(k)}<small>${t.kcal} ккал · белок ${Math.round(t.prot)} г · вода ${x.water} мл</small></span><span style="text-align:right">${x.weight?x.weight+' кг':''}<small>${x.workout.done?'Тренировка'+(x.workout.min?' '+x.workout.min+' мин':''):''}</small></span></button>`}).join(''):'<div class="card empty">Записей пока нет. Добавьте первый приём пищи или вес на вкладке «Сегодня».</div>'}`;
+}
+function vProfile(){
+  const p=S.profile||{sex:'m',age:'',height:'',weight:'',act:1.375,goal:'loss'},c=calc(S.profile);
+  return `<h1>Профиль</h1><p class="sub">${S.profile?'Расчёты обновятся после сохранения':'Введите данные, и приложение рассчитает норму калорий, белка, воды'}</p>
+  <div class="card"><label>Пол</label><select id="ps"><option value="m" ${p.sex==='m'?'selected':''}>Мужской</option><option value="f" ${p.sex==='f'?'selected':''}>Женский</option></select>
+  <div class="g2"><div><label>Возраст</label><input id="pa" type="number" inputmode="numeric" value="${p.age}"></div><div><label>Рост, см</label><input id="ph" type="number" inputmode="numeric" value="${p.height}"></div></div>
+  <label>Вес, кг</label><input id="pw" type="number" inputmode="decimal" step="0.1" value="${p.weight}">
+  <label>Активность</label><select id="pc">${Object.keys(ACT).map(k=>`<option value="${k}" ${+k===+p.act?'selected':''}>${ACT[k]}</option>`).join('')}</select>
+  <label>Цель</label><select id="pg">${Object.keys(GOAL).map(k=>`<option value="${k}" ${p.goal===k?'selected':''}>${GOAL[k]}</option>`).join('')}</select>
+  ${extra(S.profile)}<button style="width:100%;margin-top:14px" onclick="saveP()">Сохранить и рассчитать</button></div>
+  ${c?`<div class="card"><h2>Ваши расчёты</h2>
+  <div class="kv"><span>Целевые калории</span><b>${c.kcal} ккал</b></div>
+  <div class="kv"><span>Белок</span><b>${c.prot} г</b></div>
+  <div class="kv"><span>Жиры</span><b>${c.fat} г</b></div>
+  <div class="kv"><span>Углеводы</span><b>${c.carb} г</b></div>
+  <div class="kv"><span>Клетчатка</span><b>от ${c.fiber} г</b></div>
+  <div class="kv"><span>Вода</span><b>${(c.water/1000).toFixed(1).replace('.',',')} л</b></div>
+  <div class="kv"><span>Базовый обмен (BMR)</span><b>${c.bmr} ккал</b></div>
+  <div class="kv"><span>Расход с активностью (TDEE)</span><b>${c.tdee} ккал</b></div>
+  <div class="kv"><span>Индекс массы тела</span><b>${c.bmi}</b></div>
+  <p class="sub" style="margin:10px 0 0">Расчёт по формуле Миффлина — Сент-Жеора. Это ориентир, а не медицинская рекомендация. При травмах и хронических заболеваниях посоветуйтесь с врачом.</p></div>`:''}
+  ${remCard()}${soundCard()}<div class="card"><h2>Данные и тема</h2>
+  <label>Тема</label><select onchange="S.theme=this.value;save();render()"><option value="auto" ${S.theme==='auto'?'selected':''}>Как в системе</option><option value="light" ${S.theme==='light'?'selected':''}>Светлая</option><option value="dark" ${S.theme==='dark'?'selected':''}>Тёмная</option></select>
+  <div class="g2" style="margin-top:12px"><button class="sec" onclick="exp()">Скачать копию</button><button class="sec" onclick="$('imp').click()">Загрузить копию</button></div>
+  <input id="imp" type="file" accept="application/json" style="display:none" onchange="imp(this)">
+  <p class="sub" style="margin:10px 0 0">Данные хранятся только на этом телефоне, в браузере. Если очистить данные сайта, они пропадут, поэтому периодически сохраняйте копию.</p></div>`;
+}
+function saveP(){
+  const p={sex:$('ps').value,age:+$('pa').value,height:+$('ph').value,weight:parseFloat($('pw').value),act:+$('pc').value,goal:$('pg').value,days:+$('xd').value,place:$('xp').value,eq:[...document.querySelectorAll('.eqc:checked')].map(e=>e.value),level:+$('xl').value,mins:+$('xm').value,inj:$('xi').value,diet:$('xv').value};
+  if(!(p.age>=14&&p.age<=100)||!(p.height>=120&&p.height<=230)||!(p.weight>=30&&p.weight<=300)){toast('Проверьте возраст, рост и вес');return}
+  S.profile=p;if(!S.planStart)S.planStart=monday(iso(new Date()));S.menu=null;save();syncNotifs();toast('Профиль сохранён');tab='today';render();
+}
+async function exp(){const j=JSON.stringify(S),f='temp-backup-'+iso(new Date())+'.json',bl=new Blob([j],{type:'application/json'});
+try{const SH=CAP()&&Capacitor.Plugins.Share;if(SH){await SH.share({title:'Копия Темп',text:j,dialogTitle:'Сохранить копию'});return}}catch(e){}
+try{const d=await claude.use('downloads');if(d){await d.save({filename:f,data:bl});return}}catch(e){if(e&&e.code==='declined')return}
+try{const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=f;document.body.appendChild(a);a.click();a.remove()}catch(e){}
+try{navigator.clipboard.writeText(j).then(()=>toast('Копия скопирована в буфер'),()=>{})}catch(e){}}
+function imp(el){
+  const f=el.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.days)throw 0;S=Object.assign({profile:null,days:{},theme:'auto'},d);save();toast('Данные загружены');render()}catch(e){toast('Файл не подходит')}};r.readAsText(f);
+}
+const MD=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+function addD(d,n){const t=new Date(d+'T12:00:00');t.setDate(t.getDate()+n);return iso(t)}
+function monday(d){return addD(d,-((new Date(d+'T12:00:00').getDay()+6)%7))}
+function dd(a,b){return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5)}
+function sel(id,l,v,o){return `<label>${l}</label><select id="${id}">${o.map(a=>`<option value="${a[0]}" ${String(a[0])===String(v)?'selected':''}>${a[1]}</option>`).join('')}</select>`}
+function extra(p){const q=Object.assign({days:4,place:'home',level:1,mins:5,inj:'',diet:'reg'},p);return sel('xd','Тренировок в неделю',q.days,[3,4,5,6].map(n=>[n,n]))+sel('xp','Где тренируетесь',q.place,[['home','Дома'],['gym','В зале'],['mixed','Дом + зал']])+eqBox(q)+sel('xl','Уровень',q.level,[[1,'Новичок'],[2,'Средний'],[3,'Продвинутый']])+sel('xm','Длительность',q.mins,[[4,'20–40 мин'],[5,'40–60 мин'],[6,'60–90 мин']])+sel('xi','Ограничения',q.inj,[['','Нет'],['knee','Колени'],['back','Поясница'],['shoulder','Плечи']])+sel('xv','Питание',q.diet,[['reg','Обычное'],['veg','Вегетарианское']])}
+function measCard(x){const m=x.m||{};return `<div class="card"><h2>Замеры, см</h2><div class="g2">${[['waist','Талия'],['chest','Грудь'],['hips','Бёдра'],['arm','Рука']].map(a=>`<div><label>${a[1]}</label><input id="m_${a[0]}" type="number" inputmode="decimal" step="0.1" value="${m[a[0]]||''}"></div>`).join('')}</div><button style="width:100%;margin-top:10px" onclick="setM()">Сохранить замеры</button></div>`}
+function setM(){const x=day(date),m=x.m||(x.m={});['waist','chest','hips','arm'].forEach(k=>{const v=parseFloat($('m_'+k).value);if(v>0)m[k]=v;else delete m[k]});save();toast('Замеры сохранены')}
+/* тренировки */
+const POOL={
+sq:[{n:'Приседания',h:1,a:'knee',t:'Колени по линии носков, спина прямая'},{n:'Гоблет-присед с гантелью',h:1,g:1,a:'knee',t:'Гантель у груди, глубина без боли'},{n:'Жим ногами',g:1,a:'knee',t:'Поясница прижата, колени не сводите'}],
+hi:[{n:'Ягодичный мостик',h:1,g:1,t:'Таз вверх, пауза 1 сек вверху'},{n:'Румынская тяга с гантелями',h:1,g:1,a:'back',t:'Спина ровная, таз назад'},{n:'Румынская тяга со штангой',g:1,a:'back',t:'Гриф скользит вдоль ног'}],
+lg:[{n:'Выпады назад',h:1,g:1,a:'knee',t:'Шаг назад, корпус прямой'},{n:'Подъём на носки',h:1,g:1,t:'Полная амплитуда, пауза вверху'},{n:'Болгарские выпады',h:1,g:1,a:'knee',t:'Задняя нога на опоре'}],
+pu:[{n:'Отжимания',h:1,g:1,a:'shoulder',t:'Корпус прямой, локти под 45°'},{n:'Жим гантелей лёжа',h:1,g:1,a:'shoulder',t:'Лопатки сведены'},{n:'Жим штанги лёжа',g:1,a:'shoulder',t:'Работайте со страховкой'}],
+pv:[{n:'Жим гантелей стоя',h:1,g:1,a:'shoulder',t:'Без прогиба в пояснице'},{n:'Махи гантелей в стороны',h:1,g:1,t:'Лёгкий вес, локти чуть согнуты'},{n:'Отжимания с ногами на опоре',h:1,a:'shoulder',t:'Нагрузка уходит на плечи'}],
+pl:[{n:'Тяга гантели в наклоне',h:1,g:1,a:'back',t:'Тяните локоть к поясу'},{n:'Тяга резины к поясу',h:1,t:'Сводите лопатки'},{n:'Тяга блока к поясу',g:1,t:'Спина прямая'}],
+pd:[{n:'Подтягивания',h:1,g:1,t:'Тяжело: делайте медленные спуски или с резиной'},{n:'Тяга верхнего блока',g:1,t:'Тяните к верху груди'},{n:'Тяга резины сверху',h:1,t:'Крепление над головой'}],
+co:[{n:'Планка',h:1,g:1,tm:'30–60 сек',t:'Таз не провисает'},{n:'Скручивания',h:1,g:1,t:'Поясница прижата к полу'},{n:'Подъём ног лёжа',h:1,g:1,a:'back',t:'Поясница прижата к полу'}],
+ca:[{n:'Быстрая ходьба или бег',h:1,g:1,one:1,tm:'15–20 мин',t:'Дыхание ровное'},{n:'Велотренажёр',g:1,one:1,tm:'15–20 мин',t:'Умеренный темп'},{n:'Скакалка, интервалы 30/30',h:1,a:'knee',one:1,tm:'12–15 мин',t:'Мягкие приземления'}]};
+const TPL={fb:['sq','pu','pl','hi','co'],up:['pu','pl','pv','pd','co'],lo:['sq','hi','lg','co','ca'],push:['pu','pv','pu','co'],pull:['pl','pd','pl','co'],leg:['sq','hi','lg','ca']};
+const TN={fb:'Всё тело',up:'Верх тела',lo:'Низ тела',push:'Жим',pull:'Тяга',leg:'Ноги и ягодицы'};
+const SPL={3:['fb','fb','fb'],4:['up','lo','up','lo'],5:['up','lo','fb','up','lo'],6:['push','pull','leg','push','pull','leg']};
+const DY={3:[0,2,4],4:[0,1,3,4],5:[0,1,2,3,4],6:[0,1,2,3,4,5]};
+const REPS=['8–10','10–12','10–12, вес +2,5–5% если легко','8–10, лёгкий вес'];
+const WNOTE=['Осваиваем технику, вес комфортный.','Добавляем повторы.','Добавляем подход. Если все повторы лёгкие, поднимите вес.','Разгрузка: меньше подходов и вес. Организм восстанавливается.'];
+function dy(p){return DY[p.days||4]}
+function workout(p,k,w,loc){loc=loc||(p.place==='gym'?'gym':'home');const q=Object.assign({days:4,place:'home',level:1,mins:5,inj:''},p),key=SPL[q.days][k],PG=prog(w,q.level),s=PG.s;
+const used={};const items=TPL[key].concat(['lg','co']).slice(0,q.mins).map((pt,i)=>{const L=POOL[pt].filter(e=>e[loc==='gym'?'g':'h']&&e.a!==q.inj&&(loc==='gym'||eqOk(e.n,q)));if(!L.length)return null;const L2=L.filter(x=>!used[x.n]);if(!L2.length)return null;const e=L2[(k+i+PG.bk)%L2.length];used[e.n]=1;return{n:e.n,t:e.t,h:loc==='home'&&EQ[e.n]?EQ[e.n][1]:'',line:e.one?bump(e.tm,Math.min(20,2*PG.bk)):s+' × '+(e.tm?bump(e.tm,Math.min(60,5*PG.bk)):PG.reps+(PG.tempo?' · '+PG.tempo:''))}}).filter(Boolean);
+return{name:TN[key],loc,items,rest:(q.goal==='gain'?['90–120 сек','90–120 сек','75–105 сек']:['60–90 сек','60–75 сек','45–60 сек'])[Math.min(2,Math.floor(PG.bk/3))]}}
+let pw=null;
+function curWeek(){return S.planStart?Math.max(1,Math.floor(dd(S.planStart,iso(new Date()))/7)+1):1}
+function bump(t,a){return t.replace(/\d+/g,x=>+x+a)}
+function prog(w,lv){const bk=Math.floor((w-1)/4),c=(w-1)%4,wave=Math.floor(bk/3),q=bk%3,lo=8+2*q;let s=lv+1+Math.min(2,wave);if(c===2)s=Math.min(6,s+1);if(c===3)s=Math.max(2,s-1);
+const reps=c===0?lo+'–'+(lo+2):c===3?lo+'–'+(lo+2)+', лёгкий вес':(lo+2)+'–'+(lo+4)+(c===2?', вес +2,5–5% если легко':'');
+const tempo=['','опускание 3 сек','пауза 1 сек внизу'][q];
+const note=bk===0?'Первый блок: осваиваем технику и подбираем рабочие веса.':'Блок '+(bk+1)+': начните с веса на 2,5–5% выше, чем в начале прошлого блока'+(wave>0?', подходов стало больше':'')+(tempo?'. Темп: '+tempo:'')+'. В упражнениях без веса берите более трудный вариант, добавляйте повторы или рюкзак.';
+return{bk,s,reps,tempo,note}}
+function vPlan(){const p=S.profile,cw=curWeek(),w=pw||cw,PG=prog(w,p.level||1),c=(w-1)%4,start=S.planStart||monday(iso(new Date()));
+return `<h1>План тренировок</h1><p class="sub">Недели идут без остановки: 3 нагружающие и 1 лёгкая, а каждый новый блок тяжелее предыдущего.</p>
+<div class="row" style="margin-bottom:12px"><button class="sec" style="flex:0 0 60px" onclick="pw=Math.max(1,${w}-1);render()" aria-label="Предыдущая неделя">‹</button><div style="text-align:center;font-weight:800;font-size:18px">Неделя ${w}${w===cw?' · сейчас':''}</div><button class="sec" style="flex:0 0 60px" onclick="pw=${w}+1;render()" aria-label="Следующая неделя">›</button></div>
+${w!==cw?'<button class="sec" style="width:100%;margin-bottom:12px" onclick="pw=null;render()">К текущей неделе</button>':''}
+<div class="card"><h2>Блок ${PG.bk+1}, неделя ${c+1} из 4</h2><p class="sub" style="margin:0">${WNOTE[c]}</p><p class="sub" style="margin:8px 0 0">${PG.note}</p>${p.inj?'<p class="sub" style="margin:8px 0 0;color:var(--warm)">Упражнения, неподходящие при вашем ограничении, исключены. При боли остановитесь и обратитесь к врачу.</p>':''}</div>
+${dy(p).map((di,k)=>{const d=addD(start,(w-1)*7+di),wk=workout(p,k,w,locOf(p,d)),x=S.days[d];return `<div class="card"><div class="row"><div><b>${MD[di]}, ${d.slice(8)}.${d.slice(5,7)}</b><div class="sub" style="margin:0">${wk.name}</div></div>${x&&x.workout.done?'<span class="pill" style="flex:0">Выполнена</span>':''}</div>${locSel(p,d)}${wk.items.map(exRow).join('')}${subs(wk)}<div class="sub" style="margin:8px 0 0">Разминка 5–8 мин, заминка 4–5 мин. Отдых между подходами ${wk.rest}.</div></div>`}).join('')}
+<button class="sec" style="width:100%" onclick="S.planStart=monday(iso(new Date()));pw=null;save();toast('Отсчёт недель начат заново');render()">Начать отсчёт недель заново</button>`}
+function planToday(d){const p=S.profile,s=S.planStart;if(!s)return '';const n=dd(s,d);if(n<0)return '';const di=n%7,w=Math.floor(n/7)+1,k=dy(p).indexOf(di);if(k<0)return '<div class="card"><h2>План</h2><p class="sub" style="margin:0">День отдыха. Прогулка и сон тоже часть программы.</p></div>';const wk=workout(p,k,w,locOf(p,d));return `<div class="card"><h2>План: ${wk.name}, неделя ${w}</h2>${locSel(p,d)}${wk.items.map(exRow).join('')}${subs(wk)}<p class="sub" style="margin:8px 0 0">Отдых ${wk.rest}</p></div>`}
+/* питание: цены — оценка по данным Приморскстата и обзоров Владивостока, 2026 */
+const CATS=['Крупы','Бобовые','Овощи','Фрукты','Яйца','Молочное','Мясо и рыба','Хлеб','Бакалея'];
+/* на 100 г: белок, жир, углеводы, группа, цена ₽/кг (л) */
+const FD={'Овсянка':[12.5,6.2,61,'Крупы',110],'Гречка':[12.6,3.3,62,'Крупы',105],'Рис':[7,1,77,'Крупы',135],'Пшено':[11.5,3.3,66.5,'Крупы',75],'Макароны':[12,1.5,71,'Крупы',100],
+'Чечевица':[24,1.5,46,'Бобовые',190],'Фасоль':[21,2,47,'Бобовые',200],
+'Картофель':[2,.4,16.3,'Овощи',60],'Морковь':[1.3,.1,6.9,'Овощи',80],'Капуста':[1.8,.1,4.7,'Овощи',60],'Помидор':[1.1,.2,3.7,'Овощи',260],'Огурец':[.8,.1,2.5,'Овощи',190],'Лук':[1.4,0,8.2,'Овощи',65],'Свёкла':[1.5,.1,8.8,'Овощи',70],
+'Яблоко':[.4,.4,9.8,'Фрукты',230],'Банан':[1.5,.2,21,'Фрукты',140],
+'Яйца':[12.7,10.9,.7,'Яйца',280],
+'Творог':[17,5,1.8,'Молочное',600],'Молоко':[2.8,2.5,4.7,'Молочное',150],'Кефир':[3,2.5,4,'Молочное',140],'Йогурт':[4,2.5,3.5,'Молочное',230],
+'Курица':[23.6,1.9,.4,'Мясо и рыба',400],'Куриная печень':[19.5,6,.7,'Мясо и рыба',280],'Минтай':[16,.9,0,'Мясо и рыба',230],
+'Хлеб':[6.6,1.2,40,'Хлеб',150],'Масло':[0,99.9,0,'Бакалея',200],'Кабачок':[.6,.3,4.6,'Овощи',120],'Тыква':[1,.1,6.5,'Овощи',90],'Перец':[1.3,.1,6,'Овощи',350],'Брокколи':[3,.4,5,'Овощи',350],'Шампиньоны':[4.3,1,1,'Овощи',400],'Апельсин':[.9,.2,8.1,'Фрукты',200],'Мандарин':[.8,.3,7.5,'Фрукты',220],'Сыр':[24,30,0,'Молочное',1100],'Куриное бедро':[19,6,0,'Мясо и рыба',330],'Индейка':[22,2,0,'Мясо и рыба',550],'Говядина':[20,7,0,'Мясо и рыба',800],'Горбуша':[21,7,0,'Мясо и рыба',450],'Треска':[17.7,.7,0,'Мясо и рыба',450],'Кальмар':[18,2,2,'Мясо и рыба',450],'Горох':[23,1.2,50,'Бобовые',100]};
+const RAW=[
+['b',10,'Овсянка с бананом и творогом','Овсянка 60,Молоко 200,Банан 100,Творог 100','Сварите овсянку на молоке 7 минут, добавьте банан, подайте с творогом.'],
+['b',10,'Омлет с помидором и хлебом','Яйца 150,Помидор 100,Хлеб 40,Масло 5','Взбейте яйца, добавьте помидор, жарьте под крышкой 7 минут.'],
+['b',5,'Творог с йогуртом и яблоком','Творог 200,Йогурт 100,Яблоко 150','Смешайте творог с йогуртом, добавьте яблоко.'],
+['b',20,'Яичница с картофелем','Яйца 100,Картофель 200,Лук 30,Масло 8','Обжарьте картофель с луком 12 минут, залейте яйцами.'],
+['b',20,'Гречка с яйцом и огурцом','Гречка 70,Яйца 100,Огурец 100,Масло 5','Отварите гречку 15 минут, сварите яйцо, нарежьте огурец.'],
+['b',25,'Рисовая каша с яблоком и яйцом','Рис 60,Яблоко 100,Яйца 100','Варите рис 15 минут, добавьте яблоко, подайте с яйцом.'],
+['b',20,'Овсяные оладьи с бананом','Овсянка 60,Кефир 150,Яйца 50,Банан 100,Масло 5','Смешайте всё, жарьте оладьи по 2 минуты с каждой стороны.'],
+['b',25,'Творожные сырники','Творог 200,Яйца 50,Овсянка 30,Масло 8','Замесите, сформируйте, обжарьте по 3 минуты с каждой стороны.'],
+['b',10,'Бутерброды с яйцом и огурцом','Хлеб 80,Яйца 100,Огурец 100','Сварите яйца вкрутую, выложите на хлеб с огурцом.'],
+['b',25,'Пшённая каша с яблоком','Пшено 70,Яблоко 100,Масло 5','Варите промытое пшено 20 минут, добавьте яблоко и масло.'],
+['l',35,'Гречка с курицей и морковью','Гречка 70,Курица 150,Морковь 100,Масло 8','Гречку варите 15 минут, курицу с морковью тушите 20 минут.'],
+['l',40,'Картофель с курицей и капустой','Картофель 300,Курица 150,Капуста 100,Масло 8','Запекайте картофель с курицей 35 минут при 200°, капусту подайте свежей.'],
+['l',35,'Чечевичный суп с хлебом','Чечевица 80,Морковь 80,Лук 50,Картофель 150,Хлеб 40,Масло 8','Варите чечевицу с овощами 25 минут.'],
+['l',30,'Рис с яйцами и капустой','Рис 70,Яйца 100,Капуста 150,Масло 8','Рис варите 15 минут, капусту тушите 10, добавьте яйца.'],
+['l',25,'Макароны с курицей и помидором','Макароны 80,Курица 130,Помидор 150,Масло 8','Обжарьте курицу с помидором 12 минут, смешайте с макаронами.'],
+['l',35,'Минтай с картофелем и морковью','Минтай 200,Картофель 250,Морковь 80,Масло 8','Запекайте всё вместе 30 минут при 190°.'],
+['l',30,'Гречка с куриной печенью','Гречка 70,Куриная печень 150,Лук 60,Морковь 60,Масло 8','Тушите печень с луком и морковью 15 минут, подайте с гречкой.'],
+['l',40,'Суп с фасолью и картофелем','Фасоль 60,Картофель 200,Морковь 60,Лук 40,Хлеб 40,Масло 8','Фасоль замочите на ночь, варите 40 минут с овощами.'],
+['l',35,'Рис с минтаем и овощами','Рис 70,Минтай 180,Морковь 80,Лук 40,Масло 8','Обжарьте рыбу с овощами 12 минут, подайте с рисом.'],
+['l',45,'Овощной борщ с фасолью','Свёкла 100,Капуста 150,Картофель 200,Морковь 50,Лук 40,Фасоль 30,Хлеб 40,Масло 8','Варите овощи и фасоль 35 минут, подавайте с хлебом.'],
+['l',35,'Куриный суп с лапшой','Курица 130,Макароны 50,Картофель 150,Морковь 50,Лук 30','Варите курицу 20 минут, добавьте овощи и лапшу на 10 минут.'],
+['l',30,'Пшено с курицей и морковью','Пшено 70,Курица 130,Морковь 80,Масло 8','Тушите курицу с морковью 15 минут, добавьте пшено и воду, варите 15 минут.'],
+['d',30,'Курица с рисом и огурцом','Рис 60,Курица 150,Огурец 150,Масло 5','Рис отварите, курицу обжарьте 12 минут, огурец нарежьте.'],
+['d',25,'Гречка с яйцами и помидором','Гречка 60,Яйца 100,Помидор 150,Масло 5','Отварите гречку и яйца, нарежьте помидор.'],
+['d',40,'Творожная запеканка','Творог 250,Яйца 50,Овсянка 30,Яблоко 100','Смешайте всё, выпекайте 30 минут при 180°.'],
+['d',35,'Куриные котлеты с капустой','Курица 180,Хлеб 30,Яйца 50,Лук 40,Капуста 150,Масло 8','Фарш с яйцом и луком, жарьте котлеты по 5 минут, капусту подайте свежей.'],
+['d',30,'Минтай с овощами','Минтай 220,Морковь 80,Лук 60,Помидор 100,Картофель 150,Масло 8','Тушите рыбу с овощами под крышкой 20 минут.'],
+['d',40,'Картофельное рагу с курицей','Картофель 250,Курица 130,Морковь 60,Лук 40,Масло 8','Тушите всё вместе 30 минут.'],
+['d',40,'Фасоль с овощами и яйцом','Фасоль 70,Помидор 150,Лук 40,Яйца 50,Масло 8','Фасоль замочите, отварите, затем потушите с овощами 10 минут, добавьте яйцо.'],
+['d',30,'Чечевица с овощами','Чечевица 80,Морковь 80,Лук 50,Помидор 100,Хлеб 40,Масло 8','Варите чечевицу 20 минут, добавьте обжаренные овощи.'],
+['d',35,'Тушёная капуста с курицей','Капуста 300,Курица 150,Лук 40,Хлеб 40,Масло 8','Тушите курицу с капустой и луком 25 минут.'],
+['d',25,'Макароны с куриной печенью','Макароны 70,Куриная печень 130,Лук 60,Масло 8','Обжарьте печень с луком 12 минут, смешайте с макаронами.'],
+['d',20,'Омлет с рисом и овощами','Яйца 150,Рис 50,Помидор 100,Огурец 100,Масло 5','Рис отварите заранее, добавьте в омлет, овощи подайте свежими.'],
+['s',2,'Кефир с бананом','Кефир 250,Банан 100','Смешайте в блендере или съешьте отдельно.'],
+['s',5,'Йогурт с овсянкой','Йогурт 150,Овсянка 30','Залейте овсянку йогуртом на 10 минут.'],
+['s',10,'Яйца с огурцом','Яйца 100,Огурец 150','Сварите яйца вкрутую.'],
+['s',3,'Яблоко с творогом','Яблоко 150,Творог 100','Нарежьте яблоко, подайте с творогом.'],
+['s',5,'Бутерброд с яйцом','Хлеб 60,Яйца 50,Помидор 50','Выложите яйцо и помидор на хлеб.'],
+['s',3,'Банан с варёными яйцами','Банан 100,Яйца 100','Сварите яйца вкрутую.'],
+['s',10,'Салат из капусты с яйцом','Капуста 150,Морковь 50,Яйца 100,Масло 5','Нашинкуйте овощи, добавьте яйцо и масло.'],
+['b',15,'Омлет с кабачком и хлебом','Яйца 150,Кабачок 150,Хлеб 40,Масло 5','Обжарьте кабачок 5 минут, залейте яйцами.'],
+['b',15,'Яичница с грибами','Яйца 150,Шампиньоны 100,Хлеб 50,Масло 5','Обжарьте грибы 8 минут, добавьте яйца.'],
+['b',5,'Творог с апельсином и овсянкой','Творог 200,Апельсин 150,Овсянка 30','Смешайте творог с хлопьями, добавьте дольки апельсина.'],
+['b',25,'Рисовая каша с тыквой','Рис 60,Тыква 200,Молоко 150','Варите рис с тыквой и молоком 20 минут.'],
+['b',5,'Бутерброды с сыром и помидором','Хлеб 80,Сыр 40,Помидор 100','Выложите сыр и помидор на хлеб.'],
+['b',25,'Гречка с грибами и яйцом','Гречка 70,Шампиньоны 100,Лук 30,Яйца 50,Масло 8','Гречку отварите, грибы с луком обжарьте 10 минут, добавьте яйцо.'],
+['l',35,'Куриное бедро с гречкой и капустой','Куриное бедро 170,Гречка 70,Капуста 100,Масло 5','Бедро запекайте 30 минут, гречку отварите, капусту подайте свежей.'],
+['l',45,'Гороховый суп','Горох 70,Картофель 150,Морковь 50,Лук 40,Хлеб 40,Масло 8','Горох замочите, варите 40 минут с овощами.'],
+['l',30,'Индейка с рисом и брокколи','Индейка 150,Рис 70,Брокколи 150,Масло 8','Индейку обжарьте 12 минут, брокколи припустите 5 минут, подайте с рисом.'],
+['l',35,'Горбуша с картофелем и огурцом','Горбуша 150,Картофель 250,Огурец 100,Масло 5','Запекайте рыбу с картофелем 25 минут.'],
+['l',50,'Говядина тушёная с гречкой','Говядина 130,Гречка 70,Морковь 80,Лук 40,Масло 5','Тушите говядину с овощами 40 минут, подайте с гречкой.'],
+['l',25,'Макароны с сыром и брокколи','Макароны 80,Сыр 40,Брокколи 100,Яйца 50','Отварите макароны, брокколи припустите, посыпьте сыром.'],
+['l',45,'Плов с курицей','Рис 80,Курица 150,Морковь 100,Лук 50,Масло 12','Обжарьте курицу с овощами, добавьте рис и воду, варите 25 минут.'],
+['d',35,'Куриное бедро с овощами','Куриное бедро 180,Кабачок 200,Картофель 150,Масло 5','Запекайте всё вместе 35 минут при 190°.'],
+['d',30,'Треска с рисом и морковью','Треска 200,Рис 60,Морковь 80,Масло 8','Рыбу тушите с морковью 15 минут, подайте с рисом.'],
+['d',25,'Кальмар с рисом и огурцом','Кальмар 200,Рис 60,Огурец 150,Лук 30,Масло 8','Кальмар варите 3 минуты, обжарьте с луком, подайте с рисом.'],
+['d',30,'Индейка с гречкой и помидором','Индейка 150,Гречка 60,Помидор 150,Масло 5','Индейку обжарьте 12 минут, гречку отварите.'],
+['d',50,'Говядина с картофелем','Говядина 130,Картофель 250,Лук 40,Морковь 50,Масло 5','Тушите мясо 35 минут, добавьте овощи, ещё 15 минут.'],
+['d',35,'Горбуша с овощами в духовке','Горбуша 150,Кабачок 150,Помидор 100,Картофель 150,Масло 5','Запекайте 30 минут при 190°.'],
+['d',15,'Яичница с овощами','Яйца 150,Перец 100,Помидор 100,Хлеб 50,Масло 5','Обжарьте овощи 5 минут, добавьте яйца.'],
+['s',3,'Творог с мандаринами','Творог 150,Мандарин 150','Очистите мандарины, подайте с творогом.'],
+['s',5,'Бутерброд с сыром и огурцом','Хлеб 40,Сыр 30,Огурец 80','Нарежьте и выложите на хлеб.'],
+['s',5,'Овощные палочки с йогуртом','Морковь 100,Огурец 100,Йогурт 100','Нарежьте овощи, макайте в йогурт.'],
+['s',2,'Апельсин с кефиром','Апельсин 150,Кефир 200','Съешьте апельсин и запейте кефиром.']];
+function mkIng(s){return s.split(',').map(x=>{const m=x.match(/^(.*?)\s*(\d+)$/);return [m[1].trim(),+m[2]]})}
+const R=RAW.map(a=>({t:a[0],m:a[1],n:a[2],ing:mkIng(a[3]),how:a[4]}));
+const MT={b:'Завтрак',l:'Обед',d:'Ужин',s:'Перекус'};
+let mday=0,mt='menu';
+const PM=1.07;
+function pr(n){return(S.prices&&S.prices[n])||(S.custom&&S.custom[n]&&S.custom[n][3])||Math.round((FD[n]?FD[n][4]:(PX[n]||300))*PM)}
+function rub(v){return Math.round(v/10)*10}
+function fm(v){return rub(v).toLocaleString('ru-RU')+' ₽'}
+function rk(r,f){let p=0,fa=0,c=0,u=0;ing(r).forEach(i=>{const d=FD[i[0]],g=i[1]*f/100;p+=d[0]*g;fa+=d[1]*g;c+=d[2]*g;u+=pr(i[0])*i[1]*f/1000});return{p,f:fa,c,k:4*p+9*fa+4*c,r:u}}
+const MINOR=['Масло','Лук','Морковь','Помидор','Огурец','Яблоко','Банан'];
+function isMeat(n){return FD[n][3]==='Мясо и рыба'}
+function ing(r){const ex=S.excl||[],veg=S.profile.diet==='veg';return r.ing.filter(i=>ex.indexOf(i[0])<0&&!(veg&&isMeat(i[0])))}
+function nEx(r){return r.ing.length-ing(r).length}
+function okR(r){const ex=S.excl||[],veg=S.profile.diet==='veg';return r.ing.every(i=>(ex.indexOf(i[0])<0||MINOR.indexOf(i[0])>=0)&&!(veg&&isMeat(i[0])))}
+function menuL(t){const all=R.map((r,i)=>i).filter(i=>R[i].t===t),ok=all.filter(i=>okR(R[i]));if(ok.length)return ok;const m=Math.min(...all.map(i=>nEx(R[i])));return all.filter(i=>nEx(R[i])===m)}
+function gr(g){return Math.max(5,Math.round(g/5)*5)}
+function scaleOf(ids,c){const b=ids.reduce((a,i)=>a+rk(R[i],1).k,0);return b?Math.max(.7,Math.min(1.6,c.kcal/b)):1}
+function wkCost(m,c){return m.d.reduce((s,ids)=>{const f=scaleOf(ids,c);return s+ids.reduce((a,i)=>a+rk(R[i],f).r,0)},0)}
+function getMenu(){const c=calc(S.profile),sig=JSON.stringify([S.profile.diet,S.excl||[],S.budget||0,c.kcal,S.prices||{},R.length]);
+if(!S.menu||S.menu.sig!==sig){const T=['b','l','d','s'],Ls=T.map(menuL);
+const m={sig,d:[0,1,2,3,4,5,6].map(i=>T.map((t,j)=>Ls[j].length?Ls[j][i%Ls[j].length]:null).filter(x=>x!==null))};
+if(S.budget)for(let it=0;it<80&&wkCost(m,c)>S.budget;it++){let b=null;
+m.d.forEach((ids,di)=>{const f=scaleOf(ids,c);ids.forEach((id,j)=>{const cur=rk(R[id],f).r,al=menuL(R[id].t).map(a=>[a,rk(R[a],f).r]).filter(x=>x[1]<cur-1).sort((x,y)=>x[1]-y[1]);if(al.length&&(!b||cur-al[0][1]>b.g))b={di,j,a:al[0][0],g:cur-al[0][1]}})});
+if(!b)break;m.d[b.di][b.j]=b.a}
+S.menu=m;save()}return S.menu}
+function swap(d,j){const m=getMenu(),L=menuL(R[m.d[d][j]].t);if(L.length<2)return;m.d[d][j]=L[(L.indexOf(m.d[d][j])+1)%L.length];save();render()}
+function tShop(n){S.shop=S.shop||{};S.shop[n]=!S.shop[n];save();render()}
+function tEx(n){const e=S.excl||(S.excl=[]),i=e.indexOf(n);if(i<0)e.push(n);else e.splice(i,1);save();render()}
+function exCat(g){const e=S.excl||[],ns=Object.keys(FD).filter(n=>FD[n][3]===g),all=ns.every(n=>e.indexOf(n)>=0);S.excl=e.filter(n=>ns.indexOf(n)<0).concat(all?[]:ns);save();render()}
+function setB(){const v=parseInt($('bd').value);S.budget=v>0?v:0;save();toast('Бюджет сохранён');render()}
+function setPr(n,v){v=parseFloat(v);S.prices=S.prices||{};if(v>0)S.prices[n]=v;else delete S.prices[n];save()}
+function vSet(tabs,c){const ex=S.excl||[],m=getMenu(),cost=wkCost(m,c);
+return `<h1>Продукты и бюджет</h1><p class="sub">Меню и список покупок пересоберутся под ваш выбор.</p>${tabs}
+<div class="card"><h2>Бюджет на еду в неделю</h2><div class="row"><input id="bd" type="number" inputmode="numeric" min="0" step="100" value="${S.budget||''}" placeholder="₽ в неделю"><button onclick="setB()">Сохранить</button></div><p class="sub" style="margin:8px 0 0">Сейчас меню стоит ≈ ${fm(cost)} в неделю. Если оставить поле пустым, ограничения по цене нет.</p></div>
+<div class="card"><h2>Что я не ем</h2><div class="chips" style="margin-bottom:6px"><button class="sec" onclick="exCat('Молочное')">Вся молочка</button><button class="sec" onclick="exCat('Яйца')">Яйца</button><button class="sec" onclick="exCat('Мясо и рыба')">Мясо и рыба</button></div>${CATS.map(g=>`<div class="sub" style="margin:10px 0 4px">${g}</div><div class="chips">${Object.keys(FD).filter(n=>FD[n][3]===g).map(n=>`<button class="${ex.indexOf(n)>=0?'':'sec'}" onclick="tEx('${n}')">${n}${ex.indexOf(n)>=0?' ✕':''}</button>`).join('')}</div>`).join('')}<p class="sub" style="margin:10px 0 0">Продукты с ✕ не попадут в меню и список покупок.</p></div>
+<div class="card"><h2>Цены, ₽ за кг (литр)</h2><p class="sub">Оценка по данным Приморскстата и обзорам цен Владивостока за 2025–2026 годы. В магазинах цены отличаются, поэтому их можно поправить. Яйца указаны за кг, десяток ≈ 500 г.</p>${Object.keys(FD).map(n=>`<div class="row" style="margin-bottom:6px"><span style="flex:1.4">${n}</span><input type="number" inputmode="numeric" style="flex:1" value="${pr(n)}" onchange="setPr('${n}',this.value)"></div>`).join('')}<button class="sec" style="width:100%;margin-top:6px" onclick="S.prices={};save();render()">Вернуть цены по умолчанию</button></div>`}
+function vMenu(){const c=calc(S.profile),m=getMenu();
+const tabs=`<div class="chips" style="margin-bottom:12px">${[['menu','Меню'],['shop','Покупки'],['set','Бюджет и исключения']].map(a=>`<button class="${mt===a[0]?'':'sec'}" onclick="mt='${a[0]}';render()">${a[1]}</button>`).join('')}</div>`;
+if(mt==='set')return vSet(tabs,c);
+const cost=wkCost(m,c),over=S.budget&&cost>S.budget,empty=!m.d[0].length;
+const note=empty?'<div class="card empty">Не осталось блюд без исключённых продуктов. Уберите часть исключений на вкладке «Бюджет и исключения».</div>':'';
+if(mt==='shop'){const A={},G={};m.d.forEach(ids=>{const f=scaleOf(ids,c);ids.forEach(i=>ing(R[i]).forEach(x=>{A[x[0]]=(A[x[0]]||0)+x[1]*f}))});Object.keys(A).forEach(n=>(G[FD[n][3]]=G[FD[n][3]]||[]).push(n));const sh=S.shop||{};
+return `<h1>Покупки</h1><p class="sub">Продукты на 7 дней по вашему меню. Цены примерные, для Владивостока.</p>${tabs}${note}
+<div class="card"><div class="kv"><span>Всего ≈</span><b ${over?'style="color:var(--bad)"':''}>${fm(cost+exTot())}</b></div>${exTot()?`<div class="kv"><span>Из них свои покупки</span><b>${fm(exTot())}</b></div>`:''}${S.budget?`<div class="kv"><span>Ваш бюджет</span><b>${fm(S.budget)}</b></div>`:''}${over?'<p class="sub" style="margin:8px 0 0">Даже самое дешёвое меню из доступных блюд выходит дороже бюджета. Увеличьте бюджет или уберите дорогие продукты из исключений.</p>':''}</div>
+${CATS.filter(g=>G[g]).map(g=>`<div class="card"><h2>${g}</h2>${G[g].map(n=>`<label class="cb ${sh[n]?'dn':''}" style="margin:0;color:var(--ink);font-size:15px"><input type="checkbox" ${sh[n]?'checked':''} onchange="tShop('${n}')"><span>${n}<br><small style="color:var(--mut)">${A[n]>=1000?(A[n]/1000).toFixed(1).replace('.',',')+' кг':gr(A[n])+' г'}${n==='Яйца'?' (~'+Math.round(A[n]/50)+' шт)':''}</small></span><b>${fm(pr(n)*A[n]/1000)}</b></label>`).join('')}</div>`).join('')}${extraCard()}<button class="sec" style="width:100%" onclick="S.shop={};save();render()">Сбросить отметки</button>`}
+const ids=m.d[mday]||[],f=scaleOf(ids,c),tot=ids.reduce((a,i)=>{const r=rk(R[i],f);return{k:a.k+r.k,p:a.p+r.p,f:a.f+r.f,c:a.c+r.c,r:a.r+r.r}},{k:0,p:0,f:0,c:0,r:0});
+return `<h1>Питание</h1><p class="sub">Простые блюда из обычного магазина. Порции подогнаны под вашу норму.</p>${tabs}${note}
+<div class="chips" style="margin-bottom:12px">${MD.map((n,i)=>`<button class="${i===mday?'':'sec'}" onclick="mday=${i};render()">${n}</button>`).join('')}</div>
+<div class="card"><div class="kv"><span>Калории</span><b>${Math.round(tot.k)} из ${c.kcal}</b></div><div class="kv"><span>Белки</span><b>${Math.round(tot.p)} из ${c.prot} г</b></div><div class="kv"><span>Жиры</span><b>${Math.round(tot.f)} из ${c.fat} г</b></div><div class="kv"><span>Углеводы</span><b>${Math.round(tot.c)} из ${c.carb} г</b></div><div class="kv"><span>Стоимость дня</span><b>≈ ${fm(tot.r)}</b></div><div class="kv"><span>Неделя</span><b ${over?'style="color:var(--bad)"':''}>≈ ${fm(cost)}${S.budget?' из '+fm(S.budget):''}</b></div></div>
+${noMeals()}${ids.map((i,j)=>{const r=R[i],x=rk(r,f);return `<div class="card"><b>${MT[r.t]}: ${r.n}</b><div class="sub" style="margin:2px 0 0">${Math.round(x.k)} ккал · Б ${Math.round(x.p)} · Ж ${Math.round(x.f)} · У ${Math.round(x.c)} · ≈ ${fm(x.r)} · ${r.m} мин</div><p style="margin:8px 0;font-size:14px">${ing(r).map(a=>a[0]+' '+gr(a[1]*f)+' г').join(', ')}</p>${r.ing.length>ing(r).length?`<p class="sub" style="margin:0 0 8px">Без: ${r.ing.filter(a=>ing(r).indexOf(a)<0).map(a=>a[0]).join(', ')} (исключено вами)</p>`:''}<p class="sub" style="margin:0 0 10px">${r.how}</p>${menuL(r.t).length>1?`<button class="sec" onclick="swap(${mday},${j})">Заменить блюдо</button>`:''}</div>`}).join('')}`}
+
+/* база продуктов: белки | жиры | углеводы на 100 г */
+const DB={};
+('Гречка сухая|12.6|3.3|62;Гречка варёная|3.4|0.6|19.9;Рис сухой|7|1|77;Рис варёный|2.7|0.3|28;Овсяные хлопья сухие|12.5|6.2|61;Овсяная каша на воде|3|1.7|15;Овсяная каша на молоке|3.2|4.1|14;Пшено сухое|11.5|3.3|66.5;Пшённая каша варёная|3.4|0.8|17;Макароны сухие|12|1.5|71;Макароны варёные|3.6|0.4|23;Картофель сырой|2|0.4|16.3;Картофель варёный|2|0.4|16;Картофель жареный|2.8|9.5|23;Картофельное пюре|2.1|3.3|13.7;Хлеб ржаной|6.6|1.2|40;Хлеб белый, батон|7.5|2.9|51;Чечевица сухая|24|1.5|46;Чечевица варёная|9|0.4|20;Фасоль сухая|21|2|47;Фасоль варёная|7|0.5|17;Горох сухой|23|1.2|50;Нут варёный|8.9|2.6|27;Куриная грудка сырая|23.6|1.9|0.4;Куриная грудка варёная|29.8|1.8|0.5;Куриное бедро без кожи|19|6|0;Куриные окорочка с кожей|16|11|0;Куриная печень|19.5|6|0.7;Индейка филе|22|2|0;Говядина постная|20|7|0;Говяжий фарш|18|16|0;Свинина нежирная|19|11|0;Колбаса варёная|12.8|22.2|1.5;Сосиски|10.4|22|1.6;Минтай|16|0.9|0;Горбуша|21|7|0;Треска|17.7|0.7|0;Тунец консервы в соку|24|1|0;Креветки варёные|20|1.7|0;Кальмар|18|2|2;Яйцо куриное (1 шт ≈ 55 г)|12.7|10.9|0.7;Яичный белок|11|0.2|1;Молоко 2,5%|2.8|2.5|4.7;Кефир 2,5%|3|2.5|4;Йогурт натуральный|4|2.5|3.5;Творог 5%|17|5|1.8;Творог 0–1%|16|0.6|1.3;Творог 9%|16|9|2;Сметана 15%|2.6|15|3;Сыр твёрдый|24|30|0;Масло сливочное|0.8|82.5|1;Масло подсолнечное|0|99.9|0;Помидор|1.1|0.2|3.7;Огурец|0.8|0.1|2.5;Морковь|1.3|0.1|6.9;Капуста белокочанная|1.8|0.1|4.7;Лук репчатый|1.4|0|8.2;Свёкла|1.5|0.1|8.8;Перец болгарский|1.3|0.1|6;Кабачок|0.6|0.3|4.6;Тыква|1|0.1|6.5;Баклажан|1.2|0.1|4.5;Брокколи|3|0.4|5;Шампиньоны|4.3|1|1;Кукуруза консервированная|2.2|0.4|22;Зелёный горошек консервированный|3.1|0.2|8;Яблоко|0.4|0.4|9.8;Банан|1.5|0.2|21;Апельсин|0.9|0.2|8.1;Мандарин|0.8|0.3|7.5;Груша|0.4|0.3|10.9;Виноград|0.7|0.2|16;Киви|1|0.6|10;Арбуз|0.6|0.1|5.8;Хурма|0.5|0.3|15.3;Арахис|26|45|10;Грецкий орех|15|65|7;Миндаль|19|54|13;Семечки подсолнечные|21|52|3.4;Мёд|0.8|0|81;Сахар|0|0|99.8;Шоколад молочный|6|35|52;Печенье овсяное|6.5|14|68;Мороженое пломбир|3.2|15|20;Сок яблочный|0.5|0|11;Пельмени варёные|11|12|29;Блины|6.1|12.3|26;Пицца|11|10|33').split(';').forEach(x=>{const a=x.split('|');DB[a[0]]=[+a[1],+a[2],+a[3]]});
+('Кукурузная крупа сухая|8.3|1.2|75;Перловка сухая|9.3|1.1|73.7;Перловая каша варёная|3.1|0.4|22;Манка сухая|10.3|1|73;Манная каша на молоке|3|3.2|15.3;Булгур варёный|3.1|0.2|18.6;Кускус варёный|3.8|0.2|23;Киноа варёная|4.4|1.9|21;Мюсли без сахара|10|6|65;Кукурузные хлопья|7|1|83;Мука пшеничная|10.3|1.1|68;Лаваш|9|1|56;Хлебцы цельнозерновые|10|2.5|55;Булочка сдобная|7.6|9.4|55;Тофу|8|4.8|1.9;Хумус|8|10|14;Фасоль консервированная|6.7|0.5|13;Говядина варёная|25.8|16.8|0;Куриные крылья|19.2|12.2|0;Куриные желудки|21.4|2.8|0.6;Куриное сердце|15.8|9.3|0.8;Куриная котлета жареная|17.5|11|9;Куриный фарш|17.4|12|0;Курица жареная|24|14|1;Свинина жирная|14|33|0;Свиной фарш|16|27|0;Бекон|23|45|0;Ветчина|17|12|2;Говяжья печень|17.9|3.7|5.3;Говяжий язык|16|12|0;Баранина|16.3|15.3|0;Тушёнка говяжья|16|14|0;Паштет печёночный|11|20|3;Крабовые палочки|6|1|13;Сало|2.4|89|0;Лосось, сёмга|20|13|0;Скумбрия|18|13|0;Сельдь солёная|17|11|0;Шпроты в масле|17.4|32|0;Горбуша консервы|20|6|0;Кета|22|5.6|0;Камбала|16|3|0;Хек|16.6|2.2|0;Мидии|11.5|2|3.3;Икра лососёвая|31.6|13.8|0;Печень трески|4.2|65.7|1.2;Молоко 3,2%|2.9|3.2|4.7;Молоко 1,5%|2.8|1.5|4.7;Ряженка|2.8|4|4.2;Кефир 1%|3|1|4;Йогурт греческий|9|5|4;Йогурт фруктовый|4|2.5|14;Сыр плавленый|16|19|3;Сыр моцарелла|18|18|2;Сыр брынза|17.9|20.1|0;Творожный сыр|8|22|3;Сливки 10%|3|10|4;Сметана 20%|2.8|20|3.2;Сметана 10%|3|10|2.9;Сгущённое молоко|7.2|8.5|56;Глазированный сырок|8|23|32;Яйцо перепелиное|11.9|13.1|0.6;Редис|1.2|0.1|3.4;Салат листовой|1.5|0.2|2;Шпинат|2.9|0.3|2;Сельдерей|0.9|0.1|2.1;Цветная капуста|2.5|0.3|5;Пекинская капуста|1.2|0.2|2;Квашеная капуста|1.8|0.1|4.4;Свёкла варёная|1.8|0.1|10;Чеснок|6.5|0.5|29.9;Зелёный лук|1.3|0|4.3;Укроп|2.5|0.5|6.3;Петрушка|3.7|0.4|7.6;Редька|1.9|0.2|6.7;Стручковая фасоль|2.5|0.3|5;Огурцы маринованные|0.8|0.1|1.7;Томатная паста|5|1|19;Кетчуп|1.8|1|22;Майонез|2.4|67|3.9;Горчица|5.7|6.4|22;Соевый соус|8.1|0|4.7;Оливки|1.5|10.7|6.3;Картофель запечённый|2.5|0.2|20;Картофель фри|3.8|15|41;Чипсы|5.5|30|53;Слива|0.8|0.3|9.6;Персик|0.9|0.1|11.6;Абрикос|0.9|0.1|10.8;Клубника|0.8|0.4|7.5;Малина|0.8|0.5|8.3;Черника|1.1|0.6|7.6;Чёрная смородина|1|0.4|7.3;Вишня|0.8|0.5|11.3;Ананас|0.5|0.2|11.8;Манго|0.8|0.4|15;Дыня|0.6|0.3|7.4;Гранат|0.9|0|13.9;Грейпфрут|0.7|0.2|6.5;Лимон|0.9|0.1|3;Авокадо|2|20|7.4;Изюм|2.9|0.6|66;Курага|5.2|0.3|51;Чернослив|2.3|0.7|57.5;Финики|2.5|0.5|69;Инжир сушёный|3.1|0.8|57.9;Кешью|18|44|30;Фундук|15|61|9.7;Фисташки|20|45|27;Кедровый орех|11.6|61|19.3;Семена тыквы|24.5|45.8|4.7;Семена льна|18|42|29;Семена чиа|17|31|42;Кунжут|19.4|48.7|12;Арахисовая паста|25|50|13;Кокосовая стружка|7|65|12;Горький шоколад|6.2|35.4|48.2;Конфеты шоколадные|4|20|65;Вафли|3.2|2.8|77;Пряники|4.8|2.8|77;Варенье|0.3|0|71;Зефир|0.8|0|80;Халва подсолнечная|11.6|29.7|54;Торт бисквитный|5|18|50;Кола|0|0|10.6;Апельсиновый сок|0.7|0.2|10.4;Латте|3|2.6|4.8;Капучино|2.2|2|3.6;Квас|0.2|0|5;Компот|0.2|0|10;Протеин сывороточный (порошок)|80|6|7;Борщ|1.1|2.2|5.2;Щи|1.2|2|3.5;Суп куриный с лапшой|3.2|1.8|5;Гороховый суп|3.7|2|8.4;Солянка|4.5|5.5|2.5;Плов|6.5|9|24;Гречка с мясом|8|7|16;Макароны по-флотски|9|9|20;Котлеты говяжьи жареные|16|14|8;Тефтели|10|9|9;Голубцы|6|5|9;Вареники с картофелем|4.8|3.5|32;Вареники с творогом|8.3|4.6|30;Сырники|17|10|22;Оладьи|6.1|6|38;Омлет|9.6|14|2;Яичница|14|20|1;Творожная запеканка|15|6|18;Салат оливье|3.8|12|8;Салат греческий|2|8|3.5;Винегрет|1.3|5|8.5;Салат капустный с маслом|1.3|4.5|5;Салат цезарь с курицей|8|12|8;Шаурма|10|9|24;Бургер|12|12|27;Сэндвич с ветчиной и сыром|11|10|26;Суши, роллы|4.5|2|28;Хот-дог|10|14|24;Пирожок с мясом жареный|9|13|31;Каша гречневая на молоке|4|3|17;Каша рисовая на молоке|3|2.9|17;Рагу овощное|2|4|8;Картофель тушёный с мясом|6|6|11').split(';').forEach(x=>{const a=x.split('|');DB[a[0]]=[+a[1],+a[2],+a[3]]});
+
+/* большая база: белки | жиры | углеводы на 100 г (мл) | цена ₽/кг (л), Владивосток, оценка */
+const PX={},CX={};let _c='';
+(`#Напитки;Вода минеральная|0|0|0|45;Чай чёрный без сахара|0|0|0.3|10;Чай зелёный|0|0|0.2|10;Кофе чёрный без сахара|0.2|0|0.3|30;Американо|0.1|0|0.3|150;Какао на молоке|3.2|3.5|8.5|140;Молочный коктейль|3|3|12|300;Лимонад|0|0|9|100;Тоник|0|0|8.6|110;Энергетик|0|0|11|300;Изотоник спортивный|0|0|6|250;Сок томатный|1|0|3.8|120;Сок виноградный|0.3|0|16|130;Морс клюквенный|0|0|9|120;Кисель|0.2|0|12.5|60;Кокосовое молоко|2|17|3|400;Миндальное молоко|0.6|1.1|0.3|250;Овсяное молоко|1|1.5|7|200;Айран|1.8|1.5|2.5|150;Питьевой йогурт|2.8|1.5|11|200;Смузи фруктовый|0.8|0.2|14|450;Протеиновый коктейль готовый|20|2|4|600;Безалкогольное пиво|0.3|0|6|110;Холодный чай|0|0|7.5|90;Лимонад домашний с мёдом|0|0|8|80;Компот из сухофруктов|0.3|0|12|60;Сок мультифрукт|0.4|0|12|130;Кофе с молоком без сахара|1.5|1.5|2|120;Какао на воде с сахаром|1|1|12|90
+#Сладкое и десерты;Эскимо|3|19|25|700;Мороженое сливочное|3.5|10|22|500;Фруктовый лёд|0|0|20|400;Йогурт-десерт|3|3|18|350;Пудинг|3|3|20|400;Тирамису|5|20|28|1800;Чизкейк|6|23|27|1700;Медовик|5|14|52|1300;Торт Наполеон|5|20|40|1400;Эклер|6|22|30|1500;Донат|5|20|45|1100;Круассан с шоколадом|7|24|45|1300;Маффин|5|15|50|1000;Брауни|5|22|50|1500;Печенье песочное|6|20|65|600;Печенье с шоколадом|5|22|65|800;Шоколадная паста|6|31|58|700;Белый шоколад|6|33|58|1200;Тёмный шоколад 70%|8|42|33|1500;Шоколадный батончик|5|20|65|900;Мармелад|0.5|0.1|78|400;Карамель|0|0.1|98|400;Леденцы|0|0|98|400;Жевательные конфеты|3|0|80|600;Халва тахинная|12.7|29.9|50|900;Козинаки|11|28|55|900;Джем|0.4|0|65|400;Повидло|0.4|0|65|300;Кленовый сироп|0|0|67|1500;Пастила|0.5|0|80|700;Рулет бисквитный с кремом|5|15|50|700;Пирожное картошка|5|20|50|1000;Торт шоколадный|5|24|48|1500;Блинчики с творогом|9|7|26|600;Печенье-сэндвич с кремом|4|20|68|900;Шоколад с орехами|8|35|47|1100;Протеиновый батончик|20|8|40|1500;Мюсли-батончик|6|10|68|1100;Вафельные трубочки|4|25|65|800;Сухофрукты в шоколаде|5|20|60|1500;Йогурт замороженный|4|3|20|500;Мороженое пломбир с шоколадом|3.5|17|24|700;Мороженое в стаканчике|3.2|12|26|600;Сладкий творожный сырок|7|20|30|700
+#Фастфуд;Бургер говяжий|13|13|25|1300;Чизбургер|13|14|27|1250;Двойной бургер|16|17|22|1400;Бургер куриный|12|12|27|1200;Куриный ролл|11|10|25|1250;Куриные наггетсы|15|17|16|1300;Куриные крылья острые|18|12|3|1300;Картофель по-деревенски|3|10|30|700;Пицца пепперони|12|13|30|1200;Пицца маргарита|11|10|31|1000;Пицца четыре сыра|13|13|29|1300;Пицца с ветчиной и грибами|11|9|30|1200;Донер-кебаб|12|10|25|1100;Фалафель в лепёшке|9|9|35|900;Буррито|8|9|28|1000;Тако|9|10|20|1100;Начос с сыром|7|20|50|1200;Лапша быстрого приготовления сухая|9|17|60|400;Роллы Филадельфия|7|7|27|1800;Суши с лососем|7|3|33|2000;Рамен|6|6|14|900;Вок с курицей и овощами|9|6|15|900;Паста карбонара|9|12|25|1000;Паста болоньезе|8|7|27|900;Лазанья|8|9|18|1000;Ризотто с грибами|4|5|25|800;Луковые кольца|4|15|36|1100;Сэндвич с курицей|11|7|29|1000;Сэндвич с тунцом|10|9|26|1100;Панини с сыром и ветчиной|13|12|30|1200;Круассан с ветчиной и сыром|11|18|30|1300;Сосиска в тесте|8|17|32|800;Чебурек|10|18|27|700;Самса|9|15|30|800;Беляш|10|16|25|700;Пирожок с капустой|4|8|35|500;Пирожок с картошкой|5|9|38|500;Пирожок с повидлом|4|8|43|500;Блины с мясом|9|9|26|700;Блинчики с ветчиной и сыром|10|10|26|800;Хинкали|9|9|25|900;Манты|9|10|24|900;Шашлык куриный|23|9|1|1300;Шашлык свиной|20|20|1|1500;Люля-кебаб|16|17|2|1300;Шашлык из баранины|18|18|1|1700;Куриный стрипс|17|14|15|1300;Хот-дог с сосиской|10|14|24|900;Картофельные дольки с сыром|5|14|30|900;Попкорн солёный|9|13|65|600;Сухарики к пиву|11|14|60|800
+#Готовые блюда;Суп харчо|3|3.5|5|500;Рассольник|1.5|2.5|6|400;Уха|3|1.5|2|600;Окрошка на квасе|2|3|5|450;Суп-пюре грибной|1.5|4|6|550;Суп-пюре тыквенный|1|3|7|500;Суп с фрикадельками|4|3|5|500;Грибной суп|1.5|2|5|450;Куриный бульон|2|1|0.3|300;Каша кукурузная на воде|2.5|0.5|17|200;Каша ячневая на воде|3.5|1.2|20|200;Омлет с сыром|11|17|2|600;Яйцо варёное|12.9|11.6|0.8|280;Шакшука|7|9|5|600;Драники|4|8|22|500;Картофельная запеканка с фаршем|6|6|13|600;Кабачковые оладьи|4|8|16|450;Капуста тушёная|2|3.5|7|250;Баклажаны запечённые|1.5|5|8|500;Фаршированные перцы|6|6|8|600;Котлеты рыбные|13|7|9|600;Рыба жареная|18|10|5|700;Рыба запечённая|19|6|2|800;Курица запечённая с кожей|19|13|0|600;Куриная грудка на гриле|29|3.5|0|900;Курица в сливочном соусе|17|12|3|700;Бефстроганов|14|12|4|900;Говядина тушёная|18|10|3|900;Гуляш|12|10|5|800;Свиная отбивная|20|18|8|900;Куриный шницель|18|13|10|800;Жаркое по-домашнему|9|8|10|700;Мясо по-французски|15|20|5|1000;Свиные рёбрышки|15|30|0|1200;Стейк говяжий|26|14|0|2500;Печень жареная|18|8|6|800;Гречка с грибами|4.5|4|18|400;Рис с овощами|3|2|25|300;Макароны с сыром|10|9|30|600;Спагетти с томатным соусом|5|3|26|400;Салат с тунцом|7|8|4|900;Салат крабовый|5|9|8|700;Селёдка под шубой|4|13|10|650;Салат мимоза|5|14|5|700;Салат из свежих овощей с маслом|1.3|5|5|400;Салат морковный|1|5|9|350;Салат из свёклы|1.5|5|10|400;Корейская морковь|1.5|6|10|600;Лечо|1.5|5|8|400;Икра кабачковая|1.5|4.5|8|400;Ленивые вареники|10|6|24|550;Творожное суфле|12|5|18|700;Овощной суп|1.2|1.5|5|350;Куриный суп с рисом|3|2|6|400;Тушёная картошка с курицей|7|5|11|550;Гречка с куриной грудкой|10|3|18|500;Рис с курицей|9|4|22|500;Макароны с курицей|9|4|24|500;Запечённая рыба с овощами|14|5|5|800;Овощи на гриле|2|4|7|600;Яичница с беконом|14|24|1|900;Бутерброд с колбасой|8|13|27|700;Бутерброд с сыром|10|14|27|800;Бутерброд с красной рыбой|9|11|27|1500
+#Мясные изделия;Колбаса копчёная|16|40|0|1700;Сервелат|22|38|2|1800;Салями|20|45|0|2200;Сосиски куриные|12|15|2|500;Ветчина из индейки|18|4|1|1300;Буженина|20|20|0|1500;Окорок запечённый|22|10|1|1700;Сардельки|11|23|2|600;Холодец|13|10|0|500;Тушёнка свиная|15|22|0|700;Куриная колбаса|14|12|3|500;Балык|22|22|0|2200
+#Мясо и птица;Индейка бедро|20|7|0|500;Утка тушка|16|30|0|600;Свинина шея|16|23|0|650;Свиная вырезка|20|8|0|800;Свиной окорок|17|20|0|600;Кролик|21|11|0|1100;Телятина|20|3|0|1100;Сердце говяжье|16|4|0|450;Свиная печень|19|4|3|400;Фарш смешанный|17|20|0|450;Куриные грудки с кожей|20|9|0|450;Куриные ножки|17|11|0|350;Мясо говядины на кости|17|14|0|650
+#Рыба и морепродукты;Сельдь свежая|16|10|0|300;Иваси|16|9|0|400;Навага|15|1|0|350;Корюшка|15|3|0|500;Палтус|19|3|0|900;Терпуг|18|2|0|400;Судак|18|1|0|700;Карп|16|5|0|450;Форель|20|6|0|1300;Тунец свежий|23|1|0|1800;Краб варёный|18|1|1|2500;Гребешок|17|1|3|2500;Осьминог|15|1|2|1500;Икра минтая|28|2|0|900;Скумбрия копчёная|24|14|0|700;Морская капуста|1|0.2|3|400;Креветки сырые|18|1|0|1100;Сайра консервы|18|20|0|300;Тунец консервы в масле|25|8|0|1500;Сардины в масле|24|11|0|1000;Килька в томате|12|6|3|500;Лосось консервы|20|9|0|1400
+#Овощи;Брюссельская капуста|4.8|0.3|8|400;Спаржа|2.2|0.1|3|900;Кольраби|2.8|0.1|7.9|200;Корень сельдерея|1.3|0.3|6|250;Пастернак|1.4|0.5|9.2|250;Топинамбур|2|0.1|13|250;Репа|1.5|0.1|6.2|120;Хрен|2.5|0.4|10|500;Имбирь|1.8|0.8|18|600;Перец чили|2|0.2|9|900;Зелёный горошек замороженный|5|0.4|14|300;Кукуруза варёная в початках|3.3|1.3|22|300;Руккола|2.6|0.7|3.7|1500;Айсберг|0.9|0.1|1.8|400;Кинза|2.1|0.5|3.7|600;Базилик|3.2|0.6|2.7|1200;Вешенки|3.3|0.4|3.3|500;Белые грибы|3.7|1.7|1.1|1500;Лисички|1.5|1|1.5|1500;Опята|2.2|1.2|0.5|800;Помидоры черри|1|0.2|3|600;Батат|1.6|0.1|20|300;Цветная капуста замороженная|2.5|0.3|5|300;Смесь овощей замороженная|2.5|0.3|8|300;Картофель молодой|2|0.4|16|100;Лук-порей|2|0.3|6|400;Морковь по-корейски|1.5|6|10|600
+#Фрукты и ягоды;Нектарин|0.9|0.2|11|400;Папайя|0.5|0.3|11|500;Помело|0.8|0|9|300;Фейхоа|1|0.6|10|500;Облепиха|1.2|5.4|5.7|600;Брусника|0.7|0.5|8|800;Клюква|0.5|0.1|3.8|800;Крыжовник|0.7|0.2|9|600;Ежевика|1.5|0.5|4.4|1300;Яблоки зелёные|0.4|0.4|9.6|250;Яблоки сушёные|3.2|0.1|68|600;Груши сушёные|2.3|0.6|62|600;Ягоды замороженные|0.8|0.3|8|600;Банан зелёный|1.2|0.2|20|140;Клубника замороженная|0.8|0.4|7|600;Лайм|0.9|0.1|3|600;Лимон|0.9|0.1|3|350
+#Крупы и бобовые;Бурый рис сухой|7.4|1.8|72|250;Рис басмати|8|0.7|78|300;Ячневая крупа|10|1.3|66|100;Пшеничная крупа|11|1.5|68|100;Овсяная крупа цельная|12|6|60|150;Макароны цельнозерновые|13|2.5|66|200;Лапша яичная|12|3|66|200;Вермишель|11|1|71|120;Фунчоза сухая|0.2|0.1|86|500;Лапша рисовая сухая|6|0.5|80|450;Лапша соба сухая|14|2|70|700;Булгур сухой|12|1.3|57|300;Кускус сухой|13|0.6|72|300;Киноа сухая|14|6|57|900;Нут сухой|19|6|61|200;Горох колотый|20|2|50|100;Маш|24|1.3|47|300;Сухари панировочные|11|1.4|72|300;Попкорн|11|5|78|500;Красная чечевица|24|1.5|60|250;Рис бурый варёный|2.6|0.9|23|150;Гречка зелёная сухая|12|3|60|400
+#Хлеб и выпечка;Хлеб цельнозерновой|9|2|43|200;Хлеб бородинский|6|1.3|40|180;Багет|8|1|52|350;Чиабатта|8|3|48|400;Булочка для бургера|8|4|49|300;Лепёшка|9|1|56|300;Тортилья|8|7|50|400;Пита|9|1.2|56|300;Хлебцы рисовые|8|2.8|76|600;Сушки|11|1.3|71|300;Бублик|9|1.5|55|400;Пирог с яблоками|4|9|40|700;Пирог с капустой|5|8|35|600;Кекс|5|18|50|800;Крекеры|10|12|68|500;Блины пшеничные|6|12|26|400;Тесто слоёное|7|20|45|300;Хлеб тостовый|8|3|50|250
+#Молочное;Пармезан|35|28|0|2500;Сыр чеддер|25|33|1|1500;Сыр голландский|26|27|0|1100;Камамбер|20|23|0|1800;Фета|15|21|1|1300;Маскарпоне|4|42|4|1400;Рикотта|11|13|3|1200;Сулугуни|20|24|0|1200;Сливки 20%|2.8|20|3.7|500;Сливки 33%|2.2|33|3.2|700;Простокваша|3|3.2|4|150;Творог зернистый|13|5|2|700;Кефир обезжиренный|3|0.1|4|140;Козье молоко|3|4|4.5|300;Сыр косичка|20|18|2|1200;Йогурт густой без сахара|5|3|4|350;Сметана 25%|2.5|25|3|450
+#Соусы и масла;Топлёное масло|0.2|98|0.6|900;Оливковое масло|0|99.8|0|900;Кокосовое масло|0|99.9|0|1200;Маргарин|0.5|82|1|300;Сырный соус|3|30|7|700;Соус барбекю|1|0.5|35|400;Соус цезарь|2|35|5|800;Терияки|5.9|0|16|500;Сметанный соус|3|10|4|400;Томатный соус|2|3|8|300;Песто|5|38|5|1500;Гуакамоле|2|15|7|1300;Какао-порошок|24|15|10|1000;Мука цельнозерновая|13|2.5|60|150;Крахмал|0.1|0|83|250
+#Орехи и семена;Бразильский орех|14|66|12|3000;Пекан|9|72|14|2800;Орехи микс|15|50|25|1500;Арахис жареный солёный|26|50|13|700;Мак|18|42|28|800;Тахини|17|54|12|1500;Семена подсолнечника очищенные|21|52|3.4|500;Миндаль жареный|20|53|11|1800`).replace(/\n/g,';').split(';').forEach(x=>{x=x.trim();if(!x)return;if(x[0]==='#'){_c=x.slice(1);return}const a=x.split('|');DB[a[0]]=[+a[1],+a[2],+a[3]];PX[a[0]]=+a[4];CX[a[0]]=_c});
+const GR=[[/Кола|Квас|Компот|Сок |сок$|Латте|Капучино/,'Напитки',90],[/Протеин/,'Бакалея',1500],[/Пельмени|Блины|Пицца|Бургер|Шаурма|Сэндвич|Суши|Хот-дог|Пирожок|Картофель фри|Чипсы/,'Фастфуд',1000],[/Борщ|Щи|Солянка|Суп|Плов|Гречка с мясом|Макароны по-флотски|Котлет|Тефтели|Голубцы|Вареники|Сырники|Оладьи|Омлет|Яичница|Запеканка|Салат оливье|Салат греческий|Салат цезарь|Салат капустный|Винегрет|Рагу|Картофель тушёный|Картофельное|Каша/,'Готовые блюда',450],[/Шоколад|Конфеты|Вафли|Пряники|Варенье|Зефир|Халва|Торт|Мороженое|Сгущённое|Сырок|Мёд|Сахар|Печенье/,'Сладкое и десерты',700],[/Орех|Фундук|Миндаль|Кешью|Фисташ|Арахис|Семена|Семечки|Кунжут|Кокос/,'Орехи и семена',1500],[/Колбас|Сосис|Ветчина|Бекон|Сало|Паштет|Тушёнка|Крабовые/,'Мясные изделия',900],[/Минтай|Горбуша|Треска|Тунец|Креветки|Кальмар|Лосось|Скумбрия|Сельдь|Шпроты|Кета|Камбала|Хек|Мидии|Икра|Печень трески/,'Рыба и морепродукты',600],[/Курица|Куриное|Куриные|Куриная|Индейка|Говядина|Говяжий|Говяжья|Свинина|Свиной|Свиная|Баранина|Фарш/,'Мясо и птица',600],[/Яйцо|Яичный/,'Яйца',280],[/Масло|Майонез|Кетчуп|Горчица|Соус|Томатная|Оливки/,'Соусы и масла',500],[/Молоко|Кефир|Йогурт|Творог|Сметана|Сливки|Сыр|Ряженка/,'Молочное',400],[/Хлеб|Лаваш|Хлебцы|Булочка/,'Хлеб и выпечка',200],[/Клубника|Малина|Черника|смородина|Вишня|Авокадо|Финики|Инжир/,'Фрукты и ягоды',900],[/Яблоко|Банан|Апельсин|Мандарин|Груша|Виноград|Киви|Арбуз|Хурма|Слива|Персик|Абрикос|Ананас|Манго|Дыня|Гранат|Грейпфрут|Лимон|Изюм|Курага|Чернослив/,'Фрукты и ягоды',300],[/Помидор|Огурец|Морковь|Капуста|Лук|Свёкла|Перец|Кабачок|Тыква|Баклажан|Брокколи|Шампиньоны|Редис|Салат листовой|Шпинат|Сельдерей|Чеснок|Укроп|Петрушка|Редька|Стручковая|Картофель|Горошек|Кукуруза/,'Овощи',150],[/Гречка|Рис|Овсян|Пшён|Пшено|Макарон|Перлов|Манка|Булгур|Кускус|Киноа|Мюсли|хлопья|Мука|Чечевица|Фасоль|Горох|Нут|Тофу|Хумус/,'Крупы и бобовые',180]];
+function guess(n){for(const r of GR)if(r[0].test(n))return[r[1],r[2]];return['Прочее',300]}
+const OV={'Зелёный горошек консервированный':['Овощи',250],'Грецкий орех':['Орехи и семена',1500],'Кукурузная крупа сухая':['Крупы и бобовые',100],'Манная каша на молоке':['Готовые блюда',250],'Куриный фарш':['Мясо и птица',450],'Творожный сыр':['Молочное',1200],'Глазированный сырок':['Сладкое и десерты',700],'Цветная капуста':['Овощи',200],'Пекинская капуста':['Овощи',150],'Квашеная капуста':['Овощи',150],'Зелёный лук':['Овощи',500],'Огурцы маринованные':['Овощи',300],'Соевый соус':['Соусы и масла',500],'Кедровый орех':['Орехи и семена',5000],'Горький шоколад':['Сладкое и десерты',1500],'Творожная запеканка':['Готовые блюда',600]};
+Object.keys(DB).forEach(n=>{if(!CX[n]){const g=OV[n]||guess(n);CX[n]=g[0];PX[n]=g[1]}});
+function foodOpts(){return Object.keys(Object.assign({},DB,S.custom||{})).map(n=>`<option value="${esc(n)}">`).join('')}
+function exTot(){return (S.extra||[]).reduce((a,e)=>a+pr(e.n)*e.g/1000,0)}
+function addExtra(){const f=fnd($('xn').value),g=parseFloat($('xg').value);if(!f){toast('Выберите продукт из списка');return}if(!(g>0)){toast('Введите вес в граммах');return}(S.extra=S.extra||[]).push({n:f[0],g});save();render()}
+function delExtra(i){S.extra.splice(i,1);save();render()}
+function extraCard(){const E=S.extra||[],sh=S.shop||{};return `<div class="card"><h2>Свои покупки</h2><p class="sub">Любой продукт из базы (${Object.keys(DB).length}+) с ценой за вес.</p>${E.map((e,i)=>`<div class="cb ${sh['x:'+e.n]?'dn':''}"><input type="checkbox" ${sh['x:'+e.n]?'checked':''} onchange="tShop('x:${e.n}')"><span>${e.n}<br><small style="color:var(--mut)">${e.g>=1000?(e.g/1000).toFixed(1).replace('.',',')+' кг':e.g+' г'} · ${CX[e.n]||'Мой продукт'}</small></span><b>${fm(pr(e.n)*e.g/1000)}</b><button class="del" onclick="delExtra(${i})" aria-label="Удалить">×</button></div>`).join('')}<label>Продукт</label><input id="xn" list="fl" autocomplete="off" placeholder="Начните вводить название"><datalist id="fl">${foodOpts()}</datalist><label>Вес, г</label><input id="xg" type="number" inputmode="decimal" min="0"><button style="width:100%;margin-top:10px" onclick="addExtra()">Добавить в список</button></div>`}
+
+function MTO(){const h=new Date().getHours(),cur=h>=5&&h<11?'b':h>=11&&h<16?'l':h>=16&&h<21?'d':'s';return ['b','l','d','s'].map(t=>`<option value="${t}" ${t===cur?'selected':''}>${MT[t]}</option>`).join('')}
+function mealList(x){if(!x.meals.length)return '<div class="empty">Пока ничего не добавлено</div>';const G={};x.meals.forEach((m,i)=>(G[m.t||'']=G[m.t||'']||[]).push([m,i]));
+return ['b','l','d','s',''].filter(t=>G[t]).map(t=>`<div class="sub" style="margin:12px 0 2px;color:var(--ink);font-weight:800">${t?MT[t]:'Без указания'} · ${G[t].reduce((a,q)=>a+q[0].kcal,0)} ккал</div>`+G[t].map(q=>{const m=q[0];return `<div class="meal"><span>${esc(m.name)}<br><small>${m.kcal} ккал · Б ${m.prot} · Ж ${m.fat||0} · У ${m.carb||0}${m.cost?' · ≈ '+m.cost+' ₽':''}</small></span><button class="del" onclick="delMeal(${q[1]})" aria-label="Удалить">Удалить</button></div>`}).join('')).join('')}
+function noMeals(){return ['b','l','d','s'].filter(t=>!menuL(t).length).map(t=>`<div class="card" style="border-color:var(--warm)"><b>${MT[t]}: нет подходящих блюд</b><p class="sub" style="margin:6px 0 10px">Из-за исключённых продуктов не осталось ни одного блюда на этот приём пищи.</p><button class="sec" onclick="S.excl=[];save();render()">Сбросить исключения</button></div>`).join('')}
+function fnd(q){q=q.trim().toLowerCase();if(!q)return null;const all=Object.assign({},DB,S.custom||{}),ks=Object.keys(all);let k=ks.find(n=>n.toLowerCase()===q);if(!k){const m=ks.filter(n=>n.toLowerCase().indexOf(q)>=0);if(m.length===1)k=m[0]}return k?[k,all[k]]:null}
+function calcF(v,g){const w=v.map(x=>x*g/100);return{p:w[0],f:w[1],c:w[2],k:4*w[0]+9*w[1]+4*w[2]}}
+function prev(){const f=fnd($('mn').value),g=parseFloat($('mg').value),e=$('pv');if(!f||!(g>0)){e.textContent=f?'Введите вес в граммах':'';return}const r=calcF(f[1],g);e.textContent=Math.round(r.k)+' ккал · Б '+r.p.toFixed(1)+' · Ж '+r.f.toFixed(1)+' · У '+r.c.toFixed(1)+' · ≈ '+Math.round(pr(f[0])*g/1000)+' ₽'}
+function addMeal(){const f=fnd($('mn').value),g=parseFloat($('mg').value);if(!f){toast('Выберите продукт из списка или добавьте свой');return}if(!(g>0)){toast('Введите вес в граммах');return}const r=calcF(f[1],g);day(date).meals.push({t:$('mtp').value,name:f[0]+', '+g+' г',kcal:Math.round(r.k),prot:Math.round(r.p*10)/10,fat:Math.round(r.f*10)/10,carb:Math.round(r.c*10)/10,cost:Math.round(pr(f[0])*g/1000)});save();render()}
+function addCustom(){const n=$('cn').value.trim(),a=['cp','cf','cc'].map(i=>parseFloat($(i).value)||0);if(!n){toast('Введите название');return}if(parseFloat($('cr').value)>0)a.push(parseFloat($('cr').value));(S.custom=S.custom||{})[n]=a;save();toast('Продукт добавлен');render()}
+function foodForm(){const all=Object.keys(Object.assign({},DB,S.custom||{}));return `<label>Приём пищи</label><select id="mtp">${MTO()}</select><label>Продукт</label><input id="mn" list="fl" autocomplete="off" placeholder="Начните вводить: курица, гречка…" oninput="prev()"><datalist id="fl">${foodOpts()}</datalist>
+<label>Вес, г</label><input id="mg" type="number" inputmode="decimal" min="0" oninput="prev()">
+<div id="pv" style="min-height:22px;margin:8px 0 0;font-weight:700"></div>
+<button style="width:100%;margin-top:6px" onclick="addMeal()">Добавить еду</button>
+<p class="sub" style="margin:8px 0 0">Калории и БЖУ считаются сами. Выбирайте строку в том виде, как еда лежит в тарелке: «сухая», «варёная» и т.д.</p>
+<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700">Нет продукта в списке? Добавьте свой</summary><label>Название</label><input id="cn" placeholder="Например, сырники"><div class="g2"><div><label>Белок на 100 г</label><input id="cp" type="number" inputmode="decimal"></div><div><label>Жир на 100 г</label><input id="cf" type="number" inputmode="decimal"></div></div><label>Углеводы на 100 г</label><input id="cc" type="number" inputmode="decimal"><label>Цена за кг, ₽ (необязательно)</label><input id="cr" type="number" inputmode="decimal"><button class="sec" style="width:100%;margin-top:8px" onclick="addCustom()">Сохранить продукт</button></details>`}
+
+(function(){
+/* ===== движок анимаций упражнений: скелет, прямая и обратная кинематика ===== */
+const GR=80,TOR=24,NKL=9,UA=13,FA=12,TH=17,SH=17,SW=8,HW=5,DUR=2.8;
+const RAD=Math.PI/180,AD=a=>[Math.sin(a*RAD),Math.cos(a*RAD)];
+function parsePose(s){const p={x:50,y:0,t:180,hd:0,a:[0,0],b:[0,0],l:[0,0],m:[0,0],s:0,j:0,f:0,k:1};let h=null;
+s.trim().split(/\s+/).forEach(tok=>{if(!tok)return;const c=tok[0],v=tok.slice(1).split(',').map(Number);
+if('abl m'.indexOf(c)>=0&&c!==' ')p[c]=v;else if(c==='x'||c==='y'||c==='t'||c==='s'||c==='j'||c==='f'||c==='k')p[c]=v[0];else if(c==='h')h=v[0];
+else if('ABLM'.indexOf(c)>=0)p[c]=v;});
+if(h!==null)p.hd=h-p.t;return p}
+function ik(o,t,l1,l2,dir){let dx=t[0]-o[0],dy=t[1]-o[1],d=Math.hypot(dx,dy);d=Math.max(0.5,Math.min(d,l1+l2-0.01));const a=Math.atan2(dy,dx),c=(l1*l1+d*d-l2*l2)/(2*l1*d),th=Math.acos(Math.max(-1,Math.min(1,c))),g=a+(dir||1)*th;
+return[[o[0]+Math.cos(g)*l1,o[1]+Math.sin(g)*l1],[o[0]+Math.cos(a)*d,o[1]+Math.sin(a)*d]]}
+function fk(p,v){const pel=[p.x,p.y],tv=AD(p.t),K=p.k,ne=[pel[0]+tv[0]*TOR*K,pel[1]+tv[1]*TOR*K],hv=AD(p.t+p.hd),he=[ne[0]+hv[0]*NKL,ne[1]+hv[1]*NKL];
+const pr=[tv[1],-tv[0]];let sa,sb,ha,hb;
+if(v==='f'){sa=[ne[0]+pr[0]*SW,ne[1]+pr[1]*SW-p.s];sb=[ne[0]-pr[0]*SW,ne[1]-pr[1]*SW-p.s];ha=[pel[0]+pr[0]*HW,pel[1]+pr[1]*HW];hb=[pel[0]-pr[0]*HW,pel[1]-pr[1]*HW]}
+else{sa=[ne[0],ne[1]-p.s];sb=[ne[0]+1.6,ne[1]-p.s-.6];ha=pel;hb=[pel[0]+1.6,pel[1]-.6]}
+const ch=(o,ang,u,l)=>{const e=[o[0]+AD(ang[0])[0]*u,o[1]+AD(ang[0])[1]*u];return[e,[e[0]+AD(ang[1])[0]*l,e[1]+AD(ang[1])[1]*l]]};
+const lim=(o,ang,T,u,l)=>T?ik(o,[T[0],T[1]],u,l,T[2]):ch(o,ang,u,l);
+const[ea,wa]=lim(sa,p.a,p.A,UA,FA),[eb,wb]=lim(sb,p.b,p.B,UA,FA),[ka,aa]=lim(ha,p.l,p.L,TH,SH),[kb,ab]=lim(hb,p.m,p.M,TH,SH);
+const sh=(k,a)=>Math.atan2(a[0]-k[0],a[1]-k[1])/RAD;
+const ft=(an,k,left)=>{if(v==='f')return[an[0]+(left?-4.5:4.5),an[1]+.8];const g=(sh(k,an)+p.f)*RAD;return[an[0]+Math.cos(g)*7,an[1]-Math.sin(g)*7]};
+return{pel,ne,he,sa,sb,ea,eb,wa,wb,ha,hb,ka,kb,aa,ab,fa:ft(aa,ka,1),fb:ft(ab,kb,0)}}
+const RP={he:5.6,pel:4.5,ne:4.5,ka:3,kb:3,aa:2,ab:2,fa:1.2,fb:1.2,wa:2.6,wb:2.6,ea:2.4,eb:2.4};
+function shiftJ(J,dx,dy){const o={};for(const k in J)o[k]=[J[k][0]+dx,J[k][1]+dy];return o}
+function maxY(J){let m=-1e9;for(const k in RP)m=Math.max(m,J[k][1]+RP[k]);return m}
+function lerp(a,b,u){return a+(b-a)*u}
+function lerpA(a,b,u){const d=((b-a+540)%360)-180;return a+d*u}
+const ANG={t:1,hd:1,f:1};
+function blend(P,Q,u){const o={};for(const k in P){const a=P[k],b=Q[k];if(Array.isArray(a)&&Array.isArray(b)){const low=k===k.toLowerCase();o[k]=a.map((x,i)=>low?lerpA(x,b[i],u):(i<2?lerp(x,b[i],u):x))}else if(typeof a==='number'&&typeof b==='number')o[k]=ANG[k]?lerpA(a,b,u):lerp(a,b,u);else o[k]=a}return o}
+const CACHE={};
+function prep(T,key){if(CACHE[key])return CACHE[key];const fr=T.fr.map(parsePose),c={fr,ox:0,J0:null};
+c.J0=place(fr[0],T,null);c.Jb=T.bi!==undefined?place(fr[T.bi],T,c.J0):null;let sx=0,n=0;for(let i=0;i<fr.length;i++){const J=place(fr[i],T,c.J0);let mn=1e9,mx=-1e9;for(const k in J){mn=Math.min(mn,J[k][0]);mx=Math.max(mx,J[k][0])}sx+=(mn+mx)/2;n++}
+c.ox=T.nc?0:50-sx/n;CACHE[key]=c;return c}
+function place(p,T,J0){let J=fk(p,T.v||'s');if(T.m==='F')return shiftJ(J,0,0);
+let dy=T.g?GR-(J[T.g][1]+RP[T.g])-p.j:GR-maxY(J)-p.j;J=shiftJ(J,0,dy);
+if(T.m==='A'||T.m==='M'){const key=T.m==='A'?'aa':'ab';const ref=J0?J0[key][0]:J[key][0];J=shiftJ(J,ref-J[key][0],0)}
+return J}
+function poseAt(T,key,t){const c=prep(T,key),n=c.fr.length,w=T.w||c.fr.map(()=>1),tot=w.reduce((a,b)=>a+b,0);let x=t*tot,i=0;while(i<n-1&&x>=w[i]){x-=w[i];i++}const u=Math.min(1,x/w[i]),e=u*u*(3-2*u);
+const P=c.fr[i],Q=c.fr[(i+1)%n];return{J:shiftJ(place(blend(P,Q,e),T,c.J0),c.ox,0),c}}
+/* ===== рисование ===== */
+function frameSvg(T,key,props,t,tm){props=(props||'').split(',').filter(x=>/^(db|bb|bbback|band|kb|dbc|dbv)$/.test(x)).join(',');const{J,c}=poseAt(T,key,t),ox=c.ox,J0=shiftJ(c.J0,ox,0),v=T.v||'s',o=[],ov=[];
+const L=(pts,w,col,op)=>o.push(`<polyline points="${pts.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${op?` opacity="${op}"`:''}/>`);
+const C=(x,y,r,f,s,w,op)=>o.push(`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${f||'none'}"${s?` stroke="${s}" stroke-width="${w||2}"`:''}${op?` opacity="${op}"`:''}/>`);
+const R=(x,y,w,h,f,op,rx)=>o.push(`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${h}" rx="${rx||1.5}" fill="${f}"${op?` opacity="${op}"`:''}/>`);
+const M='var(--mut)',W='var(--warm)',A='var(--acc)',I='var(--ink)';
+const sc=(T.sc||[]).concat(props?props.split(','):[]);const has=x=>sc.some(s=>s.split(':')[0]===x);const arg=x=>{const s=sc.find(s=>s.split(':')[0]===x);return s&&s.indexOf(':')>0?s.split(':')[1].split(',').map(Number):null};
+// земля
+if(T.scroll){const off=(tm*T.scroll)%12;let d='';for(let x=-12+off;x<112;x+=12)d+=`M${x.toFixed(1)} ${GR+3} h6 `;o.push(`<path d="${d}" stroke="var(--line)" stroke-width="2" fill="none" stroke-linecap="round"/>`);o.push(`<line x1="0" x2="100" y1="${GR}" y2="${GR}" stroke="var(--line)" stroke-width="2"/>`)}
+else if(!T.nog)o.push(`<line x1="0" x2="100" y1="${GR}" y2="${GR}" stroke="var(--line)" stroke-width="2"/>`);
+// сцена (позади фигуры)
+if(has('mat'))R(6,GR-.5,88,3.5,W,.55,1.7);
+if(has('bench')){const y=J0.pel[1]+6,x0=J0.he[0]-9,x1=J0.pel[0]+12;R(x0,y,x1-x0,5,M,.75,2);R(x0+4,y+5,3,GR-y-5,M,.6);R(x1-8,y+5,3,GR-y-5,M,.6)}
+if(has('benchN')){const y=J0.ne[1]+5,x0=J0.ne[0]-12,x1=J0.ne[0]+9;R(x0,y,x1-x0,5,M,.75,2);R(x0+3,y+5,3,GR-y-5,M,.6);R(x1-6,y+5,3,GR-y-5,M,.6)}
+sc.forEach(s=>{const k=s.split(':')[0],a=arg(k)&&s.split(':')[0]===k?s.split(':')[1].split(',').map(Number):null;
+if(k==='box'&&a){R(a[0]+ox,a[1],a[2],a[3],M,.7,2)}
+if(k==='wall'&&a){o.push(`<line x1="${a[0]+ox}" x2="${a[0]+ox}" y1="6" y2="${GR}" stroke="${M}" stroke-width="3" opacity=".6"/>`)}
+if(k==='rect'&&a){R(a[0]+ox,a[1],a[2],a[3],M,a[4]||.6,2)}
+if(k==='ln'&&a){o.push(`<line x1="${a[0]+ox}" y1="${a[1]}" x2="${a[2]+ox}" y2="${a[3]}" stroke="${M}" stroke-width="${a[4]||3}" stroke-linecap="round" opacity=".65"/>`)}
+if(k==='hbar'&&a){const y=a[0];o.push(`<g stroke="${M}" stroke-width="3" opacity=".7"><line x1="${22+ox}" x2="${22+ox}" y1="-9" y2="${y}"/><line x1="${78+ox}" x2="${78+ox}" y1="-9" y2="${y}"/></g><line x1="${22+ox}" x2="${78+ox}" y1="${y}" y2="${y}" stroke="${W}" stroke-width="3.4" stroke-linecap="round"/>`)}
+if(k==='pulley'&&a){C(a[0]+ox,a[1],3.2,M,0,0,.8)}
+if(k==='ring'&&a){o.push(`<circle cx="${a[0]+ox}" cy="${a[1]}" r="${a[2]}" fill="none" stroke="${M}" stroke-width="2.4" opacity=".7"/>`)}
+if(k==='water'){R(0,60,100,30,'var(--acc)',.12,0)}});
+if(has('ibench')){const p=J0.pel,n=J0.ne,dx=n[0]-p[0],dy=n[1]-p[1],l=Math.hypot(dx,dy),ux=dx/l,uy=dy/l;o.push(`<g stroke="${M}" stroke-linecap="round" opacity=".7"><line x1="${p[0]-ux*3+2}" y1="${p[1]+6-uy*3}" x2="${n[0]+ux*6+2}" y2="${n[1]+6+uy*6}" stroke-width="5"/><line x1="${p[0]-3}" y1="${p[1]+7}" x2="${J0.ka[0]+2}" y2="${p[1]+7}" stroke-width="5"/><line x1="${p[0]}" y1="${p[1]+8}" x2="${p[0]}" y2="${GR}" stroke-width="3"/></g>`)}
+if(has('pedals')){[J.aa,J.ab].forEach(q=>R(q[0]-6,q[1]+1.4,15,3,M,.8,1.5))}
+if(has('chairP')&&c.Jb){const b=shiftJ(c.Jb,ox,0),y=b.pel[1]+5,x0=b.pel[0]-11;R(x0,y,19,4,M,.75,1.5);R(x0+1,y+4,3,GR-y-4,M,.6);R(x0+15,y+4,3,GR-y-4,M,.6);R(x0-2,y-20,3,24,M,.6)}
+if(has('fplate')){const d=[J.aa[0]-J.ka[0],J.aa[1]-J.ka[1]],l=Math.hypot(d[0],d[1])||1,u=[d[0]/l,d[1]/l],p=[J.aa[0]+u[0]*3.5,J.aa[1]+u[1]*3.5];L([[p[0]-u[1]*8,p[1]+u[0]*8],[p[0]+u[1]*8,p[1]-u[0]*8]],4.5,M,.85)}
+// дальние конечности
+const far=v==='s'?.42:1,fcol=A;
+L([J.sb,J.eb,J.wb],4.4,fcol,far===1?0:.42);L([J.hb,J.kb,J.ab,J.fb],5,fcol,far===1?0:.42);
+// туловище
+L([J.pel,J.ne],9,A);
+if(v==='f'){L([J.sa,J.sb],6,A);L([J.ha,J.hb],6,A)}
+// ближние конечности
+if(v==='f')L([J.hb,J.kb,J.ab,J.fb],5,A);
+L([J.ha,J.ka,J.aa,J.fa],5.3,A);
+L([J.sa,J.ea,J.wa],4.6,A);if(v==='f')L([J.sb,J.eb,J.wb],4.6,A);
+C(J.he[0],J.he[1],5.4,'var(--card)',A,2.6);
+if(v==='s'){const hd=Math.atan2(J.he[0]-J.ne[0],J.he[1]-J.ne[1]),fx=Math.cos(hd),fy=-Math.sin(hd);C(J.he[0]+fx*2.3+Math.sin(hd)*0.0,J.he[1]+fy*2.3,.9,I)}else{C(J.he[0]-2,J.he[1]-.3,.8,I);C(J.he[0]+2,J.he[1]-.3,.8,I)}
+C(J.wa[0],J.wa[1],2.6,W);if(v==='f')C(J.wb[0],J.wb[1],2.6,W);
+// снаряды и тросы
+const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
+const plate=(p,r)=>{C(p[0],p[1],r,I);C(p[0],p[1],r*.45,'var(--card)')};
+if(has('db')||has('kb')){if(v==='f'){const w=has('dbc')?[mid(J.wa,J.wb)]:[J.wa,J.wb];w.forEach(q=>{L([[q[0]-5,q[1]],[q[0]+5,q[1]]],2,I);R(q[0]-6.8,q[1]-3.6,3.2,7.2,I,0,1);R(q[0]+3.6,q[1]-3.6,3.2,7.2,I,0,1)})}else plate(J.wa,4.4)}
+if(has('bb')){if(v==='f'){const a=J.wa,b=J.wb;L([[a[0]-13,a[1]],[b[0]+13,b[1]]],2,I);[a[0]-13,b[0]+13].forEach((x,i)=>R(x-1.5,(i?b[1]:a[1])-6,3,12,I,0,1))}else plate(J.wa,7)}
+if(has('bbback')){if(v==='f'){L([[J.sa[0]-15,J.sa[1]-1],[J.sb[0]+15,J.sb[1]-1]],2,I);[J.sa[0]-15,J.sb[0]+15].forEach(x=>R(x-1.5,J.sa[1]-7,3,12,I,0,1))}else plate(J.ne,7)}
+if(has('bbH')){plate(J.pel,7)}
+if(has('wheel')){plate(J.wa,4.5)}
+if(has('cab')&&!has('band')){const a=arg('cab');if(a){C(a[0]+ox,a[1],3,M,0,0,.9);L([[a[0]+ox,a[1]],J.wa],1.8,M,.8);if(v==='f')L([[a[0]+ox,a[1]],J.wb],1.8,M,.8)}}
+if(has('band')){let a=arg('band');if(!a&&T.bdA)a=T.bdA;const src=a?[a[0]+ox,a[1]]:J.aa;if(a)C(src[0],src[1],2.6,W);L([src,J.wa],2.6,W);if(v==='f'&&a)L([src,J.wb],2.6,W)}
+if(has('rope')){const top=J.he[1]-9,bot=GR+1,ph=.5-.5*Math.cos(2*Math.PI*t),y=top+(bot-top)*ph,xa=J.wa[0],xb=J.wb[0],pts=[];for(let i=0;i<=16;i++){const u=i/16,x=lerp(xa,xb,u),dd=Math.sin(Math.PI*u);pts.push([x+ (u<.5?-1:1)*Math.abs(Math.sin(Math.PI*u))*7*0,lerp(lerp(J.wa[1],J.wb[1],u),y,dd)])}L(pts,2,W)}
+if(T.ins){const g=T.ins,M2='var(--mut)',x0=66,y0=-8;ov.push(`<rect x="${x0}" y="${y0}" width="33" height="23" rx="3" fill="var(--card)" stroke="var(--line)" stroke-width="1"/><text x="${x0+16.5}" y="${y0+5.6}" font-size="4.4" text-anchor="middle" fill="${M2}" font-family="sans-serif">вид сверху</text><circle cx="${x0+9}" cy="${y0+10}" r="1.6" fill="${M2}"/><circle cx="${x0+24}" cy="${y0+10}" r="1.6" fill="${M2}"/><line x1="${x0+9}" y1="${y0+10}" x2="${x0+24}" y2="${y0+10}" stroke="${M2}" stroke-width="1"/>`);
+const hx={wide:[x0+4,x0+29],narrow:[x0+12,x0+21],diamond:[x0+14.5,x0+18.5],norm:[x0+9,x0+24]}[g]||[x0+9,x0+24];hx.forEach(x=>ov.push(`<circle cx="${x}" cy="${y0+17}" r="2.3" fill="var(--warm)"/>`));if(g==='diamond')ov.push(`<polygon points="${x0+16.5},${y0+13.2} ${x0+19.5},${y0+17} ${x0+16.5},${y0+20.4} ${x0+13.5},${y0+17}" fill="none" stroke="var(--warm)" stroke-width="1"/>`)}
+if(T.cap)ov.push(`<text x="50" y="-1" font-size="6" text-anchor="middle" fill="var(--mut)" font-family="sans-serif">${T.cap}</text>`);
+return`<svg viewBox="0 -9 100 99" width="100%" height="190" role="img" aria-label="Схема выполнения">${T.z?`<g transform="translate(50 ${GR}) scale(${T.z}) translate(-50 ${-GR})">`:''}${o.join('')}${T.z?'</g>':''}${ov.join('')}</svg>`}
+
+const T={};
+const GA=75,WY=77.4;
+function PL(ax,ny,wx,da,ll,hd,wy,ay){ll=ll||34;hd=hd||1;wy=wy||WY;ay=ay||GA;const L=ll+24,dy=ay-ny,nx=ax+hd*Math.sqrt(L*L-dy*dy),px=ax+(nx-ax)*ll/L,py=ay+(ny-ay)*ll/L,t=Math.atan2(nx-ax,ny-ay)/RAD,lg=Math.atan2(ax-px,ay-py)/RAD;
+return{s:`x${px.toFixed(1)} y${py.toFixed(1)} t${t.toFixed(1)} l${lg.toFixed(1)},${lg.toFixed(1)} m${lg.toFixed(1)},${lg.toFixed(1)} A${wx},${wy},${da} B${wx},${wy},${da}`,lg}}
+
+T.sq={v:'s',m:'A',fr:['a90,90 b90,90','t140 h165 a90,90 b90,90 l82,-24 m82,-24']};
+T.gsq={v:'s',m:'A',sc:[],fr:['a15,150 b15,150','t150 h170 a15,150 b15,150 l82,-24 m82,-24']};
+T.bsq={v:'s',m:'A',sc:[],fr:['a-25,165 b-25,165','t145 h165 a-25,165 b-25,165 l82,-24 m82,-24']};
+T.sumo={v:'f',m:'N',sc:['dbc'],fr:['a14,14 b-14,-14 l-14,-14 m14,14','a12,12 b-12,-12 l-62,-6 m62,6']};
+T.jsq={v:'s',m:'A',fr:['t145 h165 a-50,-60 b-50,-60 l82,-24 m82,-24','j14 t180 h180 a160,170 b160,170 l8,-5 m8,-5','t165 a40,40 b40,40 l40,-10 m40,-10']};
+T.lunge={v:'s',m:'A',fr:['a10,40 b10,40','t180 a10,40 b10,40 l82,-2 m-18,-98']};
+T.lungeF={v:'s',m:'M',fr:['a10,40 b10,40','t180 a10,40 b10,40 l82,-2 m-18,-98']};
+T.split={v:'s',m:'A',fr:['a10,40 b10,40 l34,34 m-34,-34','t180 a10,40 b10,40 l80,0 m-15,-100']};
+T.calf={v:'s',m:'N',fr:['a0,0 b0,0','f-50 a0,0 b0,0']};
+T.bridge={v:'s',m:'A',sc:['mat'],fr:['t-90 h-90 a80,85 b80,85 l150,20 m150,20','t-65 h-90 a80,85 b80,85 l100,20 m100,20']};
+T.rdl={v:'s',m:'A',sc:[],fr:['a0,0 b0,0','t110 h150 a0,0 b0,0 l12,-5 m12,-5']};
+T.bp={v:'s',m:'N',sc:['bench',],fr:['t-90 h-90 a180,180 b180,180 l88,0 m88,0','t-90 h-90 a70,180 b70,180 l88,0 m88,0']};
+
+
+
+/* прямая линия тела от стопы/колена до шеи; head: 1 вправо, -1 влево */
+// отжимания
+T.pu={v:'s',m:'F',sc:['mat'],fr:[PL(20,52,72,1).s,PL(20,66,72,1).s]};
+{const k=PL(30,52,76,1,17);const k2=PL(30,66,76,1,17);const sh=l=>` l${l.lg.toFixed(1)},-150 m${l.lg.toFixed(1)},-150`;T.puk={v:'s',m:'F',sc:['mat'],fr:[k.s+sh(k),k2.s+sh(k2)]}}
+T.puw=T.pu;
+T.puinc={v:'s',m:'F',sc:['box:68,64,14,16'],fr:[(()=>{const q=PL(16,40,76,1,34,1,64);return q.s})(),(()=>{const q=PL(16,54,76,1,34,1,64);return q.s})()]};
+T.puwall={v:'s',m:'A',sc:['wall:72'],fr:['t165 a90,90 b90,90 x30','t150 h160 a40,85 b40,85 x34']};
+// планки
+{const a=PL(20,64.4,0,1);const q=a.s.replace(/ A.*$/,'');T.plank={v:'s',m:'F',sc:['mat'],fr:[q+' a0,90 b0,90',q.replace(/y([\d.]+)/,(m,y)=>'y'+(parseFloat(y)-1.2))+' a0,90 b0,90']}}
+{const a=PL(20,52,72,1);const q=PL(20,52,72,1).s;T.ptap={v:'s',m:'F',sc:['mat'],fr:[q,q.replace('A72,77.4,1','A60,50,1'),q,q.replace('B72,77.4,1','B60,50,1')]}}
+{const a=PL(20,52,72,1);const mk=(up)=>{const p=a;const q=a.s;const k=(x)=>x.toFixed(1);return q+(up===1?` l${(p.lg).toFixed(1)},${(p.lg).toFixed(1)} m65,-85`:up===2?` l65,-85 m${p.lg.toFixed(1)},${p.lg.toFixed(1)}`:'')};T.mclimb={v:'s',m:'F',sc:['mat'],d:1.6,fr:[mk(1),mk(2)]}}
+T.pike={v:'s',m:'F',sc:['mat'],fr:['x34.4 y46.2 t66 l-65,-65 m-65,-65 A63,77.4,1 B63,77.4,1','x40 y54 t76 l-52,-52 m-52,-52 A66,77.4,1 B66,77.4,1']};
+T.splank={v:'f',m:'F',sc:['mat'],fr:['x44 y60 t125 l-56,-56 m-56,-56 a0,0 b150,170','x44 y56 t125 l-56,-56 m-56,-56 a0,0 b150,170']};
+// ноги: прочее
+T.sq1={v:'s',m:'A',fr:['a90,90 b90,90','t130 h155 a90,90 b90,90 l95,-35 m88,88']};
+T.wsit={v:'s',m:'N',sc:['wall:41'],fr:['t180 a40,80 b40,80 l88,0 m88,0','t180 a45,85 b45,85 l88,0 m88,0']};
+T.slunge={v:'f',m:'A',sc:['dbc'],fr:['a12,12 b-12,-12 l-3,-3 m3,3','a12,12 b-12,-12 l-48,-48 m58,0']};
+T.curtsy={v:'f',m:'A',fr:['a30,60 b-30,-60 l-3,-3 m3,3','a30,60 b-30,-60 l10,-10 m-30,-30 t182']};
+T.jlunge={v:'s',m:'N',fr:['t180 a-30,40 b30,40 l82,-2 m-18,-98','j10 t180 a0,40 b0,40 l30,-20 m-30,-50','t180 a30,40 b-30,40 l-18,-98 m82,-2','j10 t180 a0,40 b0,40 l-30,-50 m30,-20']};
+T.stepup={v:'s',m:'F',sc:['box:50,66,22,14'],fr:['x45 y43 t178 a0,0 b0,0 l70,-10 m0,0','x57 y32 t180 a0,0 b0,0 l0,0 m50,-40']};
+T.calf1={v:'s',m:'N',fr:['a0,0 b0,0 m5,-100','f-50 a0,0 b0,0 m5,-100']};
+T.calfs={v:'s',m:'N',sc:['rect:50,38,16,5'],fr:['t180 a40,80 b40,80 l90,0 m90,0','f-45 t180 a40,80 b40,80 l90,0 m90,0']};
+T.bridge1={v:'s',m:'A',sc:['mat'],fr:['t-90 h-90 a80,85 b80,85 l150,20 m135,135','t-55 h-90 a80,85 b80,85 l105,20 m105,105']};
+T.hipt={v:'s',m:'A',sc:['bbH','benchN','mat'],fr:['t-125 h-125 a90,90 b90,90 l150,20 m150,20','t-92 h-110 a90,90 b90,90 l95,5 m95,5']};
+T.rdl1={v:'s',m:'A',sc:[],fr:['a0,0 b0,0','t95 h140 a0,0 b0,0 l5,-5 m-85,-85']};
+T.dl={v:'s',m:'A',sc:[],fr:['t130 h160 a0,0 b0,0 l55,-15 m55,-15','t180 a0,0 b0,0 l0,0 m0,0']};
+T.swing={v:'s',m:'A',sc:[],fr:['t118 h150 a-20,-20 b-20,-20 l30,-20 m30,-20','t180 a90,90 b90,90 l0,0 m0,0']};
+T.hyper={v:'s',m:'N',fr:['t55 h80 a60,60 b60,60 l-90,-90 m-90,-90','t100 h110 a90,90 b90,90 l-90,-90 m-90,-90']};
+T.legp={v:'s',m:'F',fr:['x34 y56 t-135 h-135 a0,0 b0,0 l135,120 m135,120','x34 y56 t-135 h-135 a0,0 b0,0 l128,128 m128,128']};
+T.lcurl={v:'s',m:'N',sc:['mat'],fr:['t90 h90 a90,90 b90,90 l-90,-90 m-90,-90','t90 h90 a90,90 b90,90 l-90,-165 m-90,-165']};
+T.kick={v:'s',m:'F',sc:['mat'],fr:['x36 y58 t90 a0,0 b0,0 l0,-90 m20,-100','x36 y58 t90 a0,0 b0,0 l0,-90 m-100,-110']};
+
+
+
+// грудь, плечи, руки
+T.ibp={v:'s',m:'N',sc:['ibench',],fr:['t-135 h-135 a180,180 b180,180 l90,0 m90,0','t-135 h-135 a65,180 b65,180 l90,0 m90,0']};
+T.fpress={v:'s',m:'N',sc:['mat',],fr:['t-90 h-90 a180,180 b180,180 l150,20 m150,20','t-90 h-90 a92,180 b92,180 l150,20 m150,20']};
+T.fly={v:'f',cap:'вид сверху',m:'N',sc:['rect:39,6,22,58'],fr:['a38,38 b-38,-38 l-6,-6 m6,6','a-82,-82 b82,82 l-6,-6 m6,6']};
+T.pullover={v:'s',m:'N',sc:['benchN',],fr:['t-90 h-90 a180,180 b180,180 l88,0 m88,0','t-90 h-100 a-120,-120 b-120,-120 l88,0 m88,0']};
+T.cpress={v:'s',m:'N',sc:['rect:41,18,4,40','rect:42,62,18,4'],fr:['t180 a-25,80 b-25,80 l90,0 m90,0','t180 a88,88 b88,88 l90,0 m90,0']};
+T.dip={v:'f',m:'F',nog:1,sc:['ln:26,43,44,43,3.5','ln:56,43,74,43,3.5','ln:35,43,35,82,3','ln:65,43,65,82,3'],fr:['x50 y41 t180 A38,43,1 B62,43,-1 l-3,-3 m3,3','x50 y55 t180 A38,43,1 B62,43,-1 l-3,-3 m3,3']};
+T.cdip={v:'s',m:'F',sc:['rect:14,62,20,4','rect:15,66,3,14','rect:31,66,3,14'],fr:['x38 y62 t-172 A32,62,1 B32,62,1 l80,50 m80,50','x38 y72 t-172 A32,62,1 B32,62,1 l80,88 m80,88']};
+T.ohp={v:'f',m:'N',sc:[],fr:['a-75,180 b75,180 l-4,-4 m4,4','a-168,-172 b168,172 l-4,-4 m4,4']};
+T.arn={v:'f',m:'N',sc:[],fr:['a14,155 b-14,-155 l-4,-4 m4,4','a-60,-175 b60,175 l-4,-4 m4,4','a-168,-172 b168,172 l-4,-4 m4,4']};
+T.lraise={v:'f',m:'N',sc:[],fr:['a6,6 b-6,-6 l-4,-4 m4,4','a-88,-85 b88,85 l-4,-4 m4,4']};
+T.fraise={v:'s',m:'A',sc:[],fr:['a0,0 b0,0','a90,90 b90,90']};
+T.rfly={v:'f',cap:'вид сзади, корпус наклонён вперёд',m:'N',sc:[],fr:['k.55 t180 a8,8 b-8,-8 l-4,-4 m4,4','k.55 t180 a-88,-85 b88,85 l-4,-4 m4,4']};
+T.upr={v:'f',m:'N',sc:[],fr:['a4,4 b-4,-4 l-4,-4 m4,4','a-125,35 b125,-35 l-4,-4 m4,4']};
+T.shrug={v:'f',m:'N',sc:[],fr:['a2,2 b-2,-2 l-4,-4 m4,4','s6 a2,2 b-2,-2 l-4,-4 m4,4']};
+T.curl={v:'s',m:'A',sc:[],fr:['a0,0 b0,0','a5,165 b5,165']};
+T.triext={v:'s',m:'A',sc:[],fr:['a180,180 b180,180','a175,-50 b175,-50']};
+T.pdown={v:'s',m:'A',sc:['cab:62,-6'],fr:['a0,95 b0,95','a0,0 b0,0']};
+T.facep={v:'s',m:'A',sc:['cab:98,14'],fr:['a90,90 b90,90','a-70,125 b-70,125']};
+// спина
+T.pull={v:'f',m:'F',nog:1,sc:['hbar:2'],fr:['x50 y52 t180 A34,2,-1 B66,2,1 l3,3 m-3,-3','x50 y30 t180 A34,2,-1 B66,2,1 l3,3 m-3,-3']};
+T.hang={v:'f',m:'F',nog:1,sc:['hbar:2'],fr:['x50 y52 t180 A34,2,-1 B66,2,1 l3,3 m-3,-3','x50 y50 t180 s3 A34,2,-1 B66,2,1 l3,3 m-3,-3']};
+T.pdn={v:'s',m:'N',sc:['cab:66,-8','rect:42,66,18,4'],fr:['t172 h172 a165,170 b165,170 l90,0 m90,0','t165 h170 a15,150 b15,150 l90,0 m90,0']};
+T.brow={v:'s',m:'A',fr:['t112 h150 a0,0 b0,0 l12,-8 m12,-8','t112 h150 a-95,0 b-95,0 l12,-8 m12,-8']};
+T.row1={v:'s',m:'A',sc:['rect:56,60,28,5'],fr:['t98 h135 a0,0 b3,3 l12,-8 m12,-8','t98 h135 a-95,0 b3,3 l12,-8 m12,-8']};
+T.crow={v:'s',m:'N',sc:['cab:98,50','rect:36,62,16,4','rect:82,42,3,30'],fr:['t178 a90,90 b90,90 l75,50 m75,50','t186 a-30,70 b-30,70 l75,50 m75,50']};
+{const a=PL(78,58,36,1,34,-1,40),b=PL(78,46,36,1,34,-1,40);T.invrow={v:'s',m:'F',sc:['rect:26,34,26,5','rect:28,39,3,41','rect:48,39,3,41'],fr:[a.s,b.s]}}
+T.sup={v:'s',m:'N',sc:['mat'],fr:['t90 h90 a90,90 b90,90 l-90,-90 m-90,-90','t105 h115 a115,115 b115,115 l-100,-100 m-100,-100']};
+// пресс
+T.crunch={v:'s',m:'A',sc:['mat'],fr:['t-90 h-90 a-130,-165 b-130,-165 l150,20 m150,20','t-52 h-60 a-135,-170 b-135,-170 l150,20 m150,20']};
+T.bicycle={v:'s',m:'N',sc:['mat'],fr:['t-58 h-62 a-140,-170 b-140,-170 l150,60 m100,100','t-58 h-62 a-140,-170 b-140,-170 l100,100 m150,60']};
+T.rcrunch={v:'s',m:'N',sc:['mat'],fr:['t-90 h-90 a90,90 b90,90 l175,85 m175,85','t-80 h-90 a90,90 b90,90 l150,70 m150,70']};
+T.vup={v:'s',m:'N',sc:['mat'],fr:['t-90 h-90 a-90,-90 b-90,-90 l92,92 m92,92','t-150 h-150 a115,115 b115,115 l125,125 m125,125']};
+T.deadbug={v:'s',m:'N',sc:['mat'],fr:['t-90 h-90 a180,180 b180,180 l180,90 m180,90','t-90 h-90 a-90,-90 b180,180 l180,90 m100,100','t-90 h-90 a180,180 b180,180 l180,90 m180,90','t-90 h-90 a180,180 b-90,-90 l100,100 m180,90']};
+T.legr={v:'s',m:'N',sc:['mat'],fr:['t-90 h-90 a90,90 b90,90 l92,92 m92,92','t-90 h-90 a90,90 b90,90 l178,178 m178,178']};
+T.hknee={v:'s',m:'F',nog:1,sc:['ln:44,-6,58,-6,3.5'],fr:['x50 y43 t180 A52,-6,1 B52,-6,1 l0,0 m0,0','x50 y43 t180 A52,-6,1 B52,-6,1 l100,5 m100,5']};
+T.hleg={v:'s',m:'F',nog:1,sc:['ln:44,-6,58,-6,3.5'],fr:['x50 y43 t180 A52,-6,1 B52,-6,1 l0,0 m0,0','x50 y43 t180 A52,-6,1 B52,-6,1 l90,90 m90,90']};
+T.rtwist={v:'f',m:'N',sc:['dbc'],fr:['k.9 t160 a35,100 b-35,-100 l-160,-20 m160,20','k.9 t200 a35,100 b-35,-100 l-160,-20 m160,20']};
+T.woodchop={v:'f',m:'N',sc:['cab:6,-6','dbc'],fr:['t175 a-160,-170 b-150,-170 l-8,-8 m8,8','t190 a30,35 b40,35 l-8,-8 m8,8']};
+T.abwheel={v:'s',m:'F',sc:['mat','wheel'],fr:['x44 y60 t182 A46,77.4,1 B46,77.4,1 l0,-90 m0,-90','x44 y62 t100 A76,77.4,1 B76,77.4,1 l0,-90 m0,-90']};
+// кардио
+T.jj={v:'f',m:'N',fr:['a8,8 b-8,-8 l-5,-5 m5,5','j6 a-100,-100 b100,100 l-14,-14 m14,14','a-160,-165 b160,165 l-26,-26 m26,26','j6 a-100,-100 b100,100 l-14,-14 m14,14']};
+T.star={v:'f',m:'N',fr:['a20,20 b-20,-20 l-22,-8 m22,8','j14 a-150,-155 b150,155 l-32,-32 m32,32','a20,20 b-20,-20 l-22,-8 m22,8']};
+T.rope={v:'f',m:'N',sc:['rope'],fr:['a-10,-70 b10,70 l-3,-3 m3,3','j7 a-10,-70 b10,70 l-3,-3 m3,3']};
+T.dance={v:'f',m:'N',fr:['a-150,-160 b25,10 l-12,-12 m10,10 t178','a-25,-10 b150,160 l-10,-10 m12,12 t182']};
+T.hk={v:'s',m:'N',d:1.2,fr:['j2 t176 a-40,30 b40,150 l100,5 m0,0','j8 t176 a-10,90 b10,90 l0,0 m0,0','j2 t176 a40,150 b-40,30 l0,0 m100,5','j8 t176 a-10,90 b10,90 l0,0 m0,0']};
+T.run={v:'s',m:'N',d:.9,scroll:22,fr:['t172 h172 a-50,20 b45,120 l40,15 m-35,-70','j3 t172 h172 a-10,60 b10,100 l5,-5 m70,-20','t172 h172 a45,120 b-50,20 l-35,-70 m40,15','j3 t172 h172 a10,100 b-10,60 l70,-20 m5,-5']};
+T.walk={v:'s',m:'N',d:1.4,scroll:12,fr:['t178 a-30,15 b30,70 l25,10 m-20,-25','t178 a0,40 b0,45 l3,0 m25,-10','t178 a30,70 b-30,15 l-20,-25 m25,10','t178 a0,45 b0,40 l25,-10 m3,0']};
+{const pk=PL(17,52,70,1).s;T.bur={v:'s',m:'F',d:3.6,fr:['x58 y44 t180 a0,0 b0,0 l0,0 m0,0','x49.6 y62 t108 h140 A70,77.4,1 B70,77.4,1 l85,-30 m85,-30',pk,'x49.6 y62 t108 h140 A70,77.4,1 B70,77.4,1 l85,-30 m85,-30','x58 y30 t180 a170,170 b170,170 l5,-5 m5,-5']}}
+T.elli={v:'s',m:'N',d:1.6,sc:['ln:30,76,70,76,4','ln:64,24,76,60,3'],fr:['t178 a30,60 b-30,-40 l25,5 m-25,-15','t178 a-30,-40 b30,60 l-25,-15 m25,5']};
+T.step={v:'s',m:'N',d:1.3,sc:['rect:34,76,12,3','rect:56,76,12,3'],fr:['t176 a20,70 b-20,-70 l55,0 m0,0','t176 a-20,-70 b20,70 l0,0 m55,0']};
+T.rowm={v:'s',m:'A',d:2.6,sc:['ln:6,78,70,78,2.4'],fr:['t150 h165 a90,90 b90,90 l125,45 m125,45','t200 h185 a-20,70 b-20,70 l88,88 m88,88']};
+{const C=[46,64],R=8,pt=(ph,dir)=>`L${(C[0]+R*Math.cos(ph)).toFixed(1)},${(C[1]+R*Math.sin(ph)).toFixed(1)},${dir} M${(C[0]+R*Math.cos(ph+Math.PI)).toFixed(1)},${(C[1]+R*Math.sin(ph+Math.PI)).toFixed(1)},${dir}`;
+T.bikeE={v:'s',m:'F',d:1.6,sc:['ring:24,62,11','ring:76,62,11','ln:24,62,46,46,2.4','ln:46,46,70,46,2.4','ln:70,46,76,62,2.4','ln:46,46,46,64,2.4','ln:70,46,66,32,2.4','ln:38,43,50,43,3'],
+fr:[0,Math.PI/2,Math.PI,3*Math.PI/2].map(ph=>`x42 y36 t140 h150 A68,31,1 B68,31,1 `+pt(ph,-1))}}
+T.swim={v:'s',m:'N',d:2,sc:['water'],fr:['x50 y64 t90 h100 l-92,-92 m-92,-85 a95,95 b-60,-60','x50 y64 t90 h100 l-92,-85 m-92,-92 a40,40 b100,100','x50 y64 t90 h100 l-92,-92 m-92,-85 a-60,-60 b95,95','x50 y64 t90 h100 l-92,-85 m-92,-92 a100,100 b40,40']};
+
+
+
+{const q=PL(20,52,72,1),b=PL(20,66,72,1);const up=q.s.replace(/y([\d.]+)/,(m,y)=>'y'+(parseFloat(y)-10)).replace(/A72,77.4,1/,'A72,67.4,1').replace(/B72,77.4,1/,'B72,67.4,1');T.puc={v:'s',m:'F',sc:['mat'],d:2.4,fr:[b.s,q.s,up,q.s]}}
+{const hi=PL(14,52,71,1,34,1,WY,62),lo=PL(14,66,71,1,34,1,WY,62);T.puf={v:'s',m:'F',sc:['box:2,62,18,18'],fr:[hi.s,lo.s]}}
+T.crow.bdA=[98,52];T.pdn.bdA=[66,-8];
+
+
+
+const FL=(s)=>s.replace(/ A.*$/,'');
+// ---- пресс и планки
+{const b=FL(PL(20,52,0,1).s),c=FL(PL(20,54,0,1).s);T.splank={v:'s',m:'F',sc:['mat'],cap:'на боку, опора на прямую руку',fr:[b+' a0,0 b180,180',c+' a0,0 b180,180']}}
+{const b=FL(PL(20,64.4,0,1).s);T.plankL={v:'s',m:'F',sc:['mat'],cap:'нога поднята, таз ровно',d:3.2,fr:[b+' a0,90 b0,90',b.replace(/ l-?[\d.]+,-?[\d.]+/,' l-112,-112')+' a0,90 b0,90',b+' a0,90 b0,90',b.replace(/ m-?[\d.]+,-?[\d.]+/,' m-112,-112')+' a0,90 b0,90']}}
+T.crunch={v:'s',m:'A',g:'pel',sc:['mat'],fr:['t-90 h-90 a170,-110 b170,-110 l150,20 m150,20','t-114 h-104 a170,-110 b170,-110 l150,20 m150,20']};
+T.bicycle={v:'s',m:'N',g:'pel',sc:['mat'],fr:['t-120 h-112 a-140,-175 b-140,-175 l150,60 m100,100','t-120 h-112 a-140,-175 b-140,-175 l100,100 m150,60']};
+T.vup={v:'s',m:'N',g:'pel',z:.82,sc:['mat'],fr:['t-90 h-90 a-120,-120 b-120,-120 l92,92 m92,92','t-150 h-150 a115,115 b115,115 l125,125 m125,125']};
+T.deadbug.g='pel';T.bicycle.g='pel';T.rcrunch.g='pel';T.legr.g='pel';T.sup.g='pel';T.bridge.g='aa';T.bridge1.g='aa';T.hipt.g='aa';
+T.hyper={v:'s',m:'F',sc:['ln:28,58,56,44,7','ln:14,74,26,66,4'],nog:1,fr:['x46 y44 t140 a60,150 b60,150 l-40,-40 m-40,-40','x46 y44 t55 a60,150 b60,150 l-40,-40 m-40,-40']};
+// ---- ноги в тренажёрах
+T.legp={v:'s',m:'F',nog:1,sc:['ln:8,48,28,66,6','ln:28,68,38,68,5','ln:12,80,74,30,3','fplate'],fr:['x30 y60 t-135 h-135 a0,0 b0,0 l160,95 m160,95','x30 y60 t-135 h-135 a0,0 b0,0 l125,125 m125,125']};
+T.legp1={v:'s',m:'F',nog:1,cap:'одной ногой',sc:['ln:8,48,28,66,6','ln:28,68,38,68,5','ln:12,80,74,30,3','fplate'],fr:['x30 y60 t-135 h-135 a0,0 b0,0 l160,95 m170,60','x30 y60 t-135 h-135 a0,0 b0,0 l125,125 m170,60']};
+T.hack={v:'s',m:'F',nog:1,sc:['ln:20,16,34,70,6','ln:20,80,58,80,3'],fr:['x36 y46 t-160 a0,0 b0,0 l8,8 m8,8','x30 y60 t-160 a0,0 b0,0 l80,-20 m80,-20']};
+// ---- приседы: отличия
+T.sqp={v:'s',m:'A',cap:'пауза 2 сек внизу',w:[1,2.2,1],fr:['a90,90 b90,90','t140 h165 a90,90 b90,90 l82,-24 m82,-24','t140 h165 a90,90 b90,90 l82,-24 m82,-24']};
+T.sqc={v:'s',m:'A',bi:1,sc:['chairP'],fr:['a90,90 b90,90','t150 h165 a90,90 b90,90 l82,-25 m82,-25']};
+T.smith={v:'s',m:'A',sc:['ln:41,4,41,78,2.5','ln:60,4,60,78,2.5'],cap:'тренажёр Смита',fr:['a-25,165 b-25,165','t165 h170 a-25,165 b-25,165 l75,-40 m75,-40']};
+T.fsq={v:'s',m:'A',fr:['a85,170 b85,170','t150 h165 a85,170 b85,170 l82,-24 m82,-24']};
+// ---- отжимания: отличия положения рук
+for(const [k,i,c] of [['pu','norm',''],['puw','wide','широкий хват'],['pun','narrow','узкий хват'],['pud','diamond','хват «ромб»']])T[k]=Object.assign({},T.pu,{ins:i,cap:c||undefined});
+T.puwall={v:'s',m:'F',sc:['wall:74'],fr:[PL(20,23.8,72,1,34,1,25).s,PL(20,30.6,72,1,34,1,25).s]};
+{const q=PL(20,52,72,1),b=PL(20,66,72,1);const up=q.s.replace(/y([\d.]+)/,(m,y)=>'y'+(parseFloat(y)-10)).replace(/A72,77.4,1/,'A68,63,1').replace(/B72,77.4,1/,'B68,63,1');T.puc={v:'s',m:'F',sc:['mat'],d:2.4,cap:'хлопок в воздухе',fr:[b.s,q.s,up,q.s]}}
+// ---- подтягивания
+function mkPull(wl,wr,yb,cap,w,extra,mid){const A=`A${wl},2,-1 B${wr},2,1 l3,3 m-3,-3`,fr=[`x50 y30 t180 ${A}`];if(mid)fr.push(`x50 y${(30+yb)/2} t180 ${A}`);fr.push(`x50 y${yb} t180 ${A}`);return{v:'f',m:'F',nog:1,sc:['hbar:2'].concat(extra||[]),cap,w,fr}}
+T.pull=mkPull(31,69,47.3,'');T.pullw=mkPull(22,78,39.3,'широкий хват');T.pullr=mkPull(37,63,49.5,'обратный хват, ладони к себе');
+T.pulln=mkPull(31,69,47.3,'опускание 4–5 секунд',[2,2,.5],[],1);T.pullg=mkPull(31,69,47.3,'гравитрон: платформа помогает',null,['pedals']);
+// ---- тяги
+T.crow1={v:'s',m:'N',cap:'одной рукой',sc:['cab:98,50','rect:36,62,16,4','rect:82,42,3,30'],fr:['t178 a90,90 b30,65 l75,50 m75,50','t186 a-30,70 b30,65 l75,50 m75,50']};
+T.lever={v:'s',m:'N',cap:'рычажный тренажёр',sc:['rect:60,28,5,30','cab:92,46','rect:36,62,16,4'],fr:['t165 h170 a88,88 b88,88 l75,50 m75,50','t165 h170 a-35,60 b-35,60 l75,50 m75,50']};
+T.crowb={v:'s',m:'N',g:'pel',sc:['mat'],fr:['t178 a88,88 b88,88 l90,90 m90,90','t186 a-30,75 b-30,75 l90,90 m90,90']};
+// ---- жимы над головой
+T.arn={v:'f',m:'N',sc:[],fr:['a14,155 b-14,-155 l-4,-4 m4,4','a-60,-175 b60,175 l-4,-4 m4,4','a-168,-172 b168,172 l-4,-4 m4,4','a-60,-175 b60,175 l-4,-4 m4,4']};
+T.ohpm={v:'f',m:'N',cap:'тренажёр, сидя',sc:['rect:38,16,24,50','rect:34,62,32,4','ln:28,2,28,44,3','ln:72,2,72,44,3'],fr:['a-75,180 b75,180 l-160,-20 m160,20','a-168,-172 b168,172 l-160,-20 m160,20']};
+// ---- кардио: ступенька
+T.step={v:'s',m:'N',d:1.3,sc:['pedals','ln:66,34,66,78,3','ln:58,40,70,40,3'],fr:['t176 a60,60 b60,60 l40,-6 m0,0','t176 a60,60 b60,60 l0,0 m40,-6']};
+T.hk.fr=['t176 a-40,30 b40,150 l100,5 m0,0','t176 a-10,90 b10,90 l0,0 m0,0','t176 a40,150 b-40,30 l0,0 m100,5','t176 a-10,90 b10,90 l0,0 m0,0'];
+T.lunge.g='aa';T.lungeF.g='ab';T.split.g='aa';T.slunge.g='aa';T.curtsy.g='aa';
+
+
+globalThis.ANIM={svg:(k,p,t,tm)=>T[k]?frameSvg(T[k],k,p,t,tm):'',has:k=>!!T[k],dur:k=>(T[k]&&T[k].d)||DUR,keys:()=>Object.keys(T)};
+})();
+
+const NAK_RULES=[[/Присед с паузой/,'sqp'],[/Приседание на стул/,'sqc'],[/Смита/,'smith'],[/Фронтальный присед/,'fsq'],[/Присед со штангой|Приседания со штангой/,'bsq'],[/Сумо-присед/,'sumo'],[/Присед-прыжок/,'jsq'],[/Присед на одной ноге/,'sq1'],[/Присед у стены/,'wsit'],[/Гоблет/,'gsq'],[/Жим ногами одной/,'legp1'],[/Жим ногами/,'legp'],[/Гакк/,'hack'],[/[Пп]рисед|Приседания/,'sq'],
+[/мостик на одной|Мостик на одной/,'bridge1'],[/Хип-траст/,'hipt'],[/[Мм]остик/,'bridge'],[/Обратная гиперэкстензия|Супермен/,'sup'],[/Гиперэкстензия/,'hyper'],
+[/Румынская тяга на одной/,'rdl1'],[/Румынская тяга/,'rdl'],[/[Сс]тановая/,'dl'],[/Махи гирей/,'swing'],[/Сгибание ног/,'lcurl'],[/Отведение ноги назад/,'kick'],
+[/Боковые выпады/,'slunge'],[/Реверанс/,'curtsy'],[/Прыжковые выпады/,'jlunge'],[/Выпады вперёд|Ходьба выпадами/,'lungeF'],[/Болгарские|Сплит-присед/,'split'],[/Выпад/,'lunge'],[/Шаг на возвышение/,'stepup'],
+[/Подъём на носки на одной/,'calf1'],[/Подъём на носки сидя/,'calfs'],[/Подъём на носки/,'calf'],
+[/Отжимания с колен/,'puk'],[/Отжимания с хлопком/,'puc'],[/в стойке у стены/,'puwall'],[/с опорой на возвышение/,'puinc'],[/Пике/,'pike'],[/Отжимания с ногами на опоре/,'puf'],[/Отжимания на брусьях/,'dip'],[/Обратные отжимания/,'cdip'],[/Отжимания широким/,'puw'],[/Отжимания узким/,'pun'],[/Алмазные/,'pud'],[/[Оо]тжимания/,'pu'],
+[/Жим гантелей лёжа на полу/,'fpress'],[/наклонной скамье/,'ibp'],[/Разводка/,'fly'],[/Пуловер на блоке/,'pdn'],[/Пуловер/,'pullover'],[/Жим в тренажёре на грудь/,'cpress'],[/Жим (штанги|гантелей) лёжа|Жим лёжа/,'bp'],
+[/Жим в тренажёре на плечи/,'ohpm'],[/Арнольда/,'arn'],[/Жим/,'ohp'],[/к подбородку/,'upr'],[/перед собой/,'fraise'],[/Махи (гантелей )?в стороны/,'lraise'],[/Разведение гантелей в наклоне/,'rfly'],[/Шраги/,'shrug'],[/Разгибани/,'pdown'],[/Французский/,'triext'],[/Сгибани|на бицепс/,'curl'],
+[/Тяга гантели в наклоне/,'row1'],[/Тяга в наклоне/,'brow'],[/Австралийские|Тяга под столом/,'invrow'],[/Тяга лица/,'facep'],[/Гребля|Гребной/,'rowm'],[/Тяга одной рукой/,'crow1'],[/рычажном/,'lever'],[/Тяга резины к поясу/,'crowb'],[/Тяга верхнего блока|Тяга резины сверху/,'pdn'],[/Тяга/,'crow'],
+[/Вис на/,'hang'],[/[Пп]одтягивания обратным/,'pullr'],[/[Пп]одтягивания широким/,'pullw'],[/Негативные/,'pulln'],[/гравитроне/,'pullg'],[/[Пп]одтягивания/,'pull'],
+[/Боковая планка/,'splank'],[/касанием плеч/,'ptap'],[/Скалолаз/,'mclimb'],[/Планка с поднятой/,'plankL'],[/Планка/,'plank'],[/Велосипед(?!ный)/,'bicycle'],[/коленей в висе/,'hknee'],[/ног в висе/,'hleg'],[/Русские/,'rtwist'],[/Мёртвый жук/,'deadbug'],[/Складка/,'vup'],[/Обратные скручивания/,'rcrunch'],[/Колесо/,'abwheel'],[/Дровосек/,'woodchop'],[/Подъём ног лёжа/,'legr'],[/Скручивания|Пресс/,'crunch'],
+[/Эллиптич/,'elli'],[/Степпер/,'step'],[/звёздочка/,'star'],[/Берпи/,'bur'],[/высоким коленом/,'hk'],[/Скакалк|скакалке/,'rope'],[/Танцевальн/,'dance'],[/Плавание/,'swim'],[/Велотренажёр/,'bikeE'],[/Быстрая ходьба|ходьба в горку|Ходьба/,'walk'],[/Бег|бег/,'run']];
+function NAK(n){for(const r of NAK_RULES)if(r[0].test(n))return r[1];return null}
+
+function anim(k,p){return k&&ANIM.has(k)?`<div class="an" data-k="${k}" data-p="${p||''}" style="min-height:190px"></div>`:''}
+(function(){if(typeof requestAnimationFrame!=='function')return;let last=0;function loop(ts){if(ts-last>32){last=ts;document.querySelectorAll('.an').forEach(el=>{if(el.offsetParent===null)return;const k=el.getAttribute('data-k'),d=ANIM.dur(k);el.innerHTML=ANIM.svg(k,el.getAttribute('data-p'),((ts/1000)/d)%1,ts/1000)})}requestAnimationFrame(loop)}requestAnimationFrame(loop)})();
+const EXI={
+'Приседания':['squat','Квадрицепсы, ягодицы, кор','База силы ног: укрепляет ноги и ягодицы, повышает расход калорий и помогает во всех движениях.'],
+'Гоблет-присед с гантелью':['squat','Квадрицепсы, ягодицы, кор, спина','Учит правильной глубине и держит корпус ровно; хорошо растит силу ног.'],
+'Жим ногами':['legpress','Квадрицепсы, ягодицы','Нагружает ноги большим весом без нагрузки на позвоночник.'],
+'Ягодичный мостик':['bridge','Ягодицы, задняя поверхность бедра','Укрепляет ягодицы, разгружает поясницу, полезен при сидячей работе.'],
+'Румынская тяга с гантелями':['hinge','Задняя поверхность бедра, ягодицы, разгибатели спины','Учит наклону с прямой спиной, укрепляет заднюю цепь мышц и осанку.'],
+'Румынская тяга со штангой':['hinge','Задняя поверхность бедра, ягодицы, разгибатели спины','Позволяет работать с большим весом для силы ягодиц и бёдер.'],
+'Выпады назад':['lunge','Квадрицепсы, ягодицы, баланс','Каждая нога работает отдельно: выравнивает силу и улучшает равновесие.'],
+'Подъём на носки':['calf','Икроножные мышцы','Укрепляет голени и стопы, помогает при беге и ходьбе.'],
+'Болгарские выпады':['lunge','Квадрицепсы, ягодицы','Сильная нагрузка на одну ногу даже с небольшим весом.'],
+'Отжимания':['pushup','Грудь, трицепс, плечи, кор','Развивает верх тела без оборудования и учит держать корпус.'],
+'Жим гантелей лёжа':['bench','Грудь, трицепс, плечи','Рост силы груди; гантели дают больший диапазон и баланс.'],
+'Жим штанги лёжа':['bench','Грудь, трицепс, плечи','Главное упражнение для силы жима, удобно наращивать вес.'],
+'Жим гантелей стоя':['press','Плечи, трицепс, кор','Укрепляет плечи и делает верх тела сильнее.'],
+'Махи гантелей в стороны':['raise','Средняя дельта (плечи)','Расширяет плечи и улучшает их форму.'],
+'Отжимания с ногами на опоре':['pushup','Плечи, верх груди, трицепс','Усложнённые отжимания с акцентом на плечи.'],
+'Тяга гантели в наклоне':['row','Широчайшие, середина спины, бицепс','Укрепляет спину и осанку, уравновешивает жимовые упражнения.'],
+'Тяга резины к поясу':['row','Середина спины, бицепс','Домашняя тяга: улучшает осанку и щадит суставы.'],
+'Тяга блока к поясу':['row','Широчайшие, середина спины, бицепс','Безопасная силовая тяга для спины и осанки.'],
+'Подтягивания':['pullup','Широчайшие, бицепс, предплечья','Сильная спина и хват, показатель силы верха тела.'],
+'Тяга верхнего блока':['pulldown','Широчайшие, бицепс','Подводит к подтягиваниям, нагрузку легко дозировать.'],
+'Тяга резины сверху':['pulldown','Широчайшие, бицепс','Домашняя замена тяги верхнего блока.'],
+'Планка':['plank','Пресс, кор, плечи, ягодицы','Укрепляет мышцы корпуса и стабилизирует спину.'],
+'Скручивания':['crunch','Прямая мышца живота','Тренирует пресс; важны контроль и дыхание, а не скорость.'],
+'Подъём ног лёжа':['crunch','Нижний пресс, сгибатели бедра','Нагружает нижнюю часть пресса, поясница прижата к полу.'],
+'Быстрая ходьба или бег':['run','Ноги, сердце, выносливость','Развивает выносливость, расходует калории, мягко нагружает сердце.'],
+'Велотренажёр':['run','Квадрицепсы, ягодицы, сердце','Кардио с малой нагрузкой на суставы.'],
+'Скакалка, интервалы 30/30':['jump','Икры, ноги, сердце, координация','Мощное кардио за короткое время, развивает координацию.']};
+Object.assign(EXI,{
+'Тяга под столом':['invrow','Широчайшие, середина спины, бицепс','Тяга без оборудования: сильная спина и осанка дома.'],
+'Супермен':['superman','Разгибатели спины, ягодицы','Укрепляет мышцы вдоль позвоночника и помогает осанке.'],
+'Обратные отжимания от стула':['dips','Трицепс, плечи, грудь','Нагружает трицепс без оборудования, нужен устойчивый стул.'],
+'Приседание на стул':['squat','Квадрицепсы, ягодицы','Лёгкий вход в приседания: стул задаёт безопасную глубину.'],
+'Отжимания узким хватом':['pushup','Трицепс, грудь','Акцент на трицепс, подходит для дома.']});
+EXI['Велотренажёр'][0]='bike';EXI['Отжимания с ногами на опоре'][0]='pushupf';EXI['Тяга блока к поясу'][0]='crow';
+const EP={'Гоблет-присед с гантелью':'db','Жим ногами':'machine','Ягодичный мостик':'mat','Румынская тяга с гантелями':'db','Румынская тяга со штангой':'bb','Жим гантелей лёжа':'bench,db','Жим штанги лёжа':'bench,bb','Жим гантелей стоя':'db','Махи гантелей в стороны':'db','Отжимания с ногами на опоре':'box','Тяга гантели в наклоне':'db','Тяга резины к поясу':'band','Тяга блока к поясу':'cable','Подтягивания':'bar','Тяга верхнего блока':'pull','Тяга резины сверху':'band','Планка':'mat','Скручивания':'mat','Подъём ног лёжа':'mat','Скакалка, интервалы 30/30':'rope','Болгарские выпады':'','Супермен':'mat','Тяга под столом':'','Обратные отжимания от стула':'chair','Приседание на стул':'chair','Отжимания':'mat','Отжимания узким хватом':'mat','Выпады назад':'','Подъём на носки':'','Быстрая ходьба или бег':''};
+function exInfo(n){const x=EXI[n];return x?anim(x[0],EP[n]||'')+`<div style="margin:6px 0"><b>Мышцы:</b> ${x[1]}</div><div style="margin-bottom:6px"><b>Чем полезно:</b> ${x[2]}</div>`:''}
+function exRow(e){return `<details class="ex"><summary><b>${e.n}</b>: ${e.line}</summary>${exInfo(e.n)}<small>Техника: ${e.t}</small>${e.h?`<br><small><b>Нет оборудования?</b> ${e.h}</small>`:''}</details>`}
+/* журнал тренировки */
+const ACTS=[['Бег','time','run'],['Ходьба','time','run'],['Велотренажёр','time','bike'],['Скакалка','time','jump'],['Плавание','time'],['Йога, растяжка','time'],['Планка','sec','plank'],['Отжимания','reps','pushup'],['Подтягивания','reps','pullup'],['Приседания','reps','squat'],['Выпады','reps','lunge'],['Пресс (скручивания)','reps','crunch'],['Берпи','reps','jump'],['Ягодичный мостик','reps','bridge'],['Жим лёжа','w','bench'],['Жим гантелей лёжа','w','bench'],['Жим стоя','w','press'],['Приседания со штангой','w','squat'],['Гоблет-присед','w','squat'],['Жим ногами','w','legpress'],['Становая тяга','w','hinge'],['Румынская тяга','w','hinge'],['Тяга гантели в наклоне','w','row'],['Тяга верхнего блока','w','pulldown'],['Сгибание на бицепс','w','curl'],['Махи гантелей в стороны','w','raise']];
+const LG={time:'Кардио: укажите время',sec:'Статика: укажите время',reps:'Со своим весом: укажите повторы',w:'С весом: укажите вес и повторы'};
+const LB={w:['Вес, кг','Повторы','Подходы'],reps:['Повторы в подходе','Подходы'],time:['Минут','Дистанция, км (необязательно)'],sec:['Секунд в подходе','Подходы']};
+const AP={'Скакалка':'rope','Подтягивания':'bar','Жим лёжа':'bench,bb','Жим гантелей лёжа':'bench,db','Жим стоя':'db','Приседания со штангой':'bbback','Гоблет-присед':'db','Жим ногами':'machine','Становая тяга':'bb','Румынская тяга':'bb','Тяга гантели в наклоне':'db','Тяга верхнего блока':'pull','Сгибание на бицепс':'db','Махи гантелей в стороны':'db','Ягодичный мостик':'mat','Планка':'mat','Пресс (скручивания)':'mat','Выпады':'','Берпи':''};
+function actOf(n){return ACTS.find(a=>a[0]===n)}
+function lf(){const a=actOf($('la').value),L=LB[a[1]];[1,2,3].forEach(i=>{$('l'+i).parentNode.style.display=L[i-1]?'':'none';if(L[i-1])$('t'+i).textContent=L[i-1]});$('an').innerHTML=a[2]?anim(a[2],AP[a[0]]||''):''}
+function logTxt(e){return e.k==='w'?`${e.a}: ${e.kg} кг × ${e.reps} повт. × ${e.sets} подх.`:e.k==='reps'?`${e.a}: ${e.reps} повт. × ${e.sets} подх.`:e.k==='sec'?`${e.a}: ${e.sec} сек × ${e.sets} подх.`:`${e.a}: ${e.min} мин${e.km?', '+e.km+' км':''}`}
+function logCard(x){const L=x.log||[];return `<div class="card"><h2>Тренировка</h2><button class="${x.workout.done?'':'sec'}" style="width:100%" onclick="wo('done')">${x.workout.done?'Выполнена':'Отметить выполненной'}</button>
+${L.length?L.map((e,i)=>`<div class="meal"><span>${logTxt(e)}</span><button class="del" onclick="delLog(${i})" aria-label="Удалить">Удалить</button></div>`).join(''):'<div class="empty">Запишите, что именно вы делали</div>'}
+<label>Что делали</label><select id="la" onchange="lf()">${[['time','Кардио'],['sec','Статика'],['reps','Со своим весом'],['w','С отягощением']].map(g=>`<optgroup label="${LG[g[0]]}">${ACTS.filter(a=>a[1]===g[0]).map(a=>`<option>${a[0]}</option>`).join('')}</optgroup>`).join('')}</select>
+<div id="an"></div><div class="g2">${[1,2,3].map(i=>`<div><label id="t${i}"></label><input id="l${i}" type="number" inputmode="decimal" min="0" step="any"></div>`).join('')}</div>
+<button style="width:100%;margin-top:10px" onclick="addLog()">Записать</button></div>`}
+function addLog(){const a=actOf($('la').value),k=a[1],v=[1,2,3].map(i=>parseFloat($('l'+i).value)),e={a:a[0],k};
+if(k==='w'){if(!(v[0]>=0)||!(v[1]>0)){toast('Введите вес и повторы');return}e.kg=v[0];e.reps=v[1];e.sets=v[2]>0?v[2]:1}
+else if(k==='reps'){if(!(v[0]>0)){toast('Введите повторы');return}e.reps=v[0];e.sets=v[1]>0?v[1]:1}
+else if(k==='sec'){if(!(v[0]>0)){toast('Введите секунды');return}e.sec=v[0];e.sets=v[1]>0?v[1]:1}
+else{if(!(v[0]>0)){toast('Введите время в минутах');return}e.min=v[0];if(v[1]>0)e.km=v[1]}
+const x=day(date);(x.log=x.log||[]).push(e);x.workout.done=true;save();render()}
+function delLog(i){day(date).log.splice(i,1);save();render()}
+function minOf(d){const x=S.days[d];if(!x)return 0;return (x.workout.min||0)+(x.log||[]).reduce((s,e)=>s+(e.min||0)+(e.sec?Math.round(e.sec*e.sets/60):0),0)}
+let sv='';
+function logged(){const r={};Object.keys(S.days).forEach(d=>(S.days[d].log||[]).forEach(e=>r[e.a]=e.k));return r}
+function dayVal(d,a,k){const l=(S.days[d]&&S.days[d].log||[]).filter(e=>e.a===a);if(!l.length)return null;if(k==='w')return Math.round(Math.max(...l.map(e=>e.kg*(1+e.reps/30)))*10)/10;if(k==='reps')return l.reduce((s,e)=>s+e.reps*e.sets,0);if(k==='sec')return l.reduce((s,e)=>s+e.sec*e.sets,0);return l.reduce((s,e)=>s+e.min,0)}
+function strCard(ds,lab){const L=logged(),ks=Object.keys(L);if(!ks.length)return '<div class="card"><h2>Прогресс по упражнениям</h2><div class="empty">Запишите подходы на вкладке «Сегодня», и здесь появится график.</div></div>';
+if(!L[sv])sv=ks[0];const k=L[sv],U={w:'Расчётный максимум на 1 повтор, кг',reps:'Повторов за день',sec:'Секунд за день',time:'Минут за день'}[k];let best='';
+if(k==='w'){let t=0;Object.keys(S.days).forEach(d=>(S.days[d].log||[]).forEach(e=>{if(e.a===sv&&e.kg>t)t=e.kg}));best=`<div class="kv"><span>Лучший рабочий вес</span><b>${t} кг</b></div>`}
+return `<div class="card"><h2>Прогресс по упражнениям</h2><select onchange="sv=this.value;render()">${ks.map(n=>`<option ${n===sv?'selected':''}>${n}</option>`).join('')}</select><p class="sub" style="margin:8px 0 0">${U}</p>${chart(ds.map(d=>dayVal(d,sv,k)),lab,{bars:k!=='w',zero:k!=='w',label:U})}${best}</div>`}
+/* напоминания */
+const REM={train:['Тренировка','18:00','Пора на тренировку по плану'],b:['Завтрак','08:00','Время завтрака: запишите еду в дневник'],l:['Обед','13:00','Время обеда'],d:['Ужин','19:00','Время ужина'],w1:['Вода, день','12:00','Выпейте воды и отметьте в приложении'],w2:['Вода, вечер','17:00','Выпейте воды и отметьте в приложении'],wt:['Взвешивание','07:30','Запишите вес утром натощак']};
+function remCfg(id){const r=(S.rem||{})[id]||{};return{on:!!r.on,t:r.t||REM[id][1]}}
+function setRem(id,k,v){S.rem=S.rem||{};(S.rem[id]=S.rem[id]||{})[k]=v;save();syncNotifs()}
+function remCard(){return `<div class="card"><h2>Напоминания</h2><p class="sub">${CAP()?'Уведомления приходят каждый день в выбранное время, даже когда приложение закрыто. Напоминание о тренировке приходит в дни вашего плана.':'Сработают, пока приложение открыто на экране или в фоне. Если приложение закрыто, уведомление не придёт. В установленном APK-приложении напоминания работают и при закрытом приложении.'}</p>${Object.keys(REM).map(id=>{const c=remCfg(id);return `<div class="row" style="margin-bottom:8px"><label class="cb" style="margin:0;flex:1.4;font-size:15px;color:var(--ink)"><input type="checkbox" ${c.on?'checked':''} onchange="setRem('${id}','on',this.checked)"><span>${REM[id][0]}</span></label><input type="time" value="${c.t}" onchange="setRem('${id}','t',this.value)"></div>`}).join('')}<button class="sec" style="width:100%" onclick="askNotif()">Разрешить уведомления телефона</button></div>`}
+async function askNotif(){const LN=LNP();if(LN){try{const r=await LN.requestPermissions();toast(r.display==='granted'?'Уведомления разрешены':'Уведомления запрещены в настройках телефона');syncNotifs()}catch(e){toast('Не удалось запросить разрешение')}return}
+try{if(!window.Notification){toast('Уведомления не поддерживаются');return}Notification.requestPermission().then(p=>toast(p==='granted'?'Уведомления разрешены':'Уведомления не разрешены'))}catch(e){toast('Уведомления здесь недоступны')}}
+let RB='';
+function banner(){return RB?`<div class="card rb" style="border-color:var(--warm)"><b>${RB}</b><button style="width:100%;margin-top:8px" onclick="RB='';this.parentNode.remove()">Понятно</button></div>`:''}
+function fire(id){RB=REM[id][2];document.querySelectorAll('.rb').forEach(e=>e.remove());$('app').insertAdjacentHTML('afterbegin',banner());try{if(!CAP()&&window.Notification&&Notification.permission==='granted')new Notification('Темп',{body:RB})}catch(e){}try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}}
+function needs(id){const d=iso(new Date()),x=S.days[d]||{},c=calc(S.profile);
+if(id==='wt')return !x.weight;if(id==='train'){const n=S.planStart?dd(S.planStart,d):-1;return n>=0&&dy(S.profile).indexOf(n%7)>=0&&!(x.workout&&x.workout.done)}
+if(id[0]==='w')return (x.water||0)<c.water;return true}
+function tick(){if(!S.profile||!S.rem)return;const n=new Date(),m=n.getHours()*60+n.getMinutes(),d=iso(n);S.remLast=S.remLast||{};
+Object.keys(REM).forEach(id=>{const c=remCfg(id);if(!c.on||S.remLast[id]===d)return;const p=c.t.split(':'),tm=(+p[0])*60+(+p[1]);if(m>=tm&&m-tm<=30&&needs(id)){S.remLast[id]=d;save();fire(id)}})}
+setInterval(tick,15000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
+
+POOL.pl.push({n:'Тяга под столом',h:1,t:'Лягте под крепкий стол и тянитесь грудью к краю, тело прямое'});
+POOL.pd.push({n:'Супермен',h:1,t:'Лёжа на животе поднимайте руки и ноги, пауза 2 секунды'});
+POOL.pv.push({n:'Обратные отжимания от стула',h:1,a:'shoulder',t:'Руки на сиденье сзади, опускайтесь до угла 90° в локтях'});
+POOL.sq.push({n:'Приседание на стул',h:1,t:'Садитесь на край стула и вставайте без раскачки'});
+POOL.pu.push({n:'Отжимания узким хватом',h:1,a:'shoulder',t:'Ладони под грудью, локти вдоль тела'});
+/* оборудование: нужное (db гантели, bb штанга, band резина, bar турник, rope скакалка, chair стул) и чем заменить дома */
+const EQ={'Гоблет-присед с гантелью':['db','бутыль воды 5 л или рюкзак с вещами у груди'],'Румынская тяга с гантелями':['db','две сумки или рюкзак с вещами в руках'],'Жим гантелей лёжа':['db','две бутыли воды по 1,5–2 л, лёжа на полу вместо скамьи'],'Жим гантелей стоя':['db','две бутылки воды или тяжёлые книги в руках'],'Махи гантелей в стороны':['db','две бутылки воды по 0,5–1 л'],'Тяга гантели в наклоне':['db','рюкзак с вещами или сумка с бутылками'],'Тяга резины к поясу':['band','полотенце на дверной ручке, тяните на себя'],'Тяга резины сверху':['band','полотенце на дверной ручке, тяните вниз'],'Подтягивания':['bar','крепкий стол: «тяга под столом»'],'Скакалка, интервалы 30/30':['rope','прыжки на месте, имитируя вращение скакалки'],'Отжимания с ногами на опоре':['','ноги на стул или диван'],'Болгарские выпады':['','задняя нога на стул или диван'],'Обратные отжимания от стула':['chair','нужен устойчивый стул или край дивана'],'Приседание на стул':['chair','любой устойчивый стул'],'Тяга под столом':['','нужен крепкий стол, который выдержит ваш вес']};
+function eqOk(n,q){const r=(EQ[n]||[''])[0];return !r||r==='chair'||(q.eq||[]).indexOf(r)>=0}
+function locOf(p,d){return p.place==='gym'?'gym':(p.place==='mixed'?((S.days[d]&&S.days[d].loc)||'home'):'home')}
+function setLoc(d,v){day(d).loc=v;save();render()}
+function locSel(p,d){const l=locOf(p,d);if(p.place!=='mixed')return `<div class="sub" style="margin:6px 0">Место: ${l==='gym'?'зал':'дома'}</div>`;return `<div class="chips" style="margin:8px 0">${[['home','Сегодня дома'],['gym','Сегодня в зале']].map(a=>`<button class="${l===a[0]?'':'sec'}" onclick="setLoc('${d}','${a[0]}')">${a[1]}</button>`).join('')}</div>`}
+function subs(wk){return wk.loc!=='home'?'':'<details class="ex"><summary><b>Чем заменить оборудование дома</b></summary><small>Гантели: бутылки с водой 1,5–5 л, рюкзак с книгами или консервами.<br>Штанга: рюкзак, набитый вещами, или сумка с водой.<br>Резиновая лента: полотенце или ремень на дверной ручке, тянуть на себя.<br>Турник: крепкий стол (тяга под столом) или перекладина в дверном проёме.<br>Скамья: диван, прочный стул или пол.<br>Скакалка: прыжки на месте, как будто крутите скакалку.</small></details>'}
+function eqBox(q){const E=[['db','Гантели'],['bb','Штанга'],['band','Резиновые ленты'],['bar','Турник'],['bench','Скамья'],['rope','Скакалка']];return `<label>Что есть дома</label><div class="chips">${E.map(a=>`<label class="cb" style="margin:0;border:0;color:var(--ink);font-size:14px"><input class="eqc" type="checkbox" value="${a[0]}" ${(q.eq||[]).indexOf(a[0])>=0?'checked':''}><span>${a[1]}</span></label>`).join('')}</div><p class="sub" style="margin:4px 0 0">Если ничего нет, дома будут упражнения без оборудования.</p>`}
+
+const OPEN={};
+function acc(){if(['today','profile'].indexOf(tab)<0)return;document.querySelectorAll('#app .card').forEach(c=>{const h=c.firstElementChild;if(!h||h.tagName!=='H2')return;const t=h.textContent,b=document.createElement('div');b.className='bd';while(h.nextSibling)b.appendChild(h.nextSibling);c.appendChild(b);c.classList.add('acc');if(OPEN[t])c.classList.add('op');h.onclick=()=>{OPEN[t]=!OPEN[t];c.classList.toggle('op')}})}
+
+/* системные уведомления в APK (Capacitor Local Notifications) */
+const CAP=()=>!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+const LNP=()=>CAP()&&Capacitor.Plugins&&Capacitor.Plugins.LocalNotifications;
+async function syncNotifs(){const LN=LNP();if(!LN||!S.profile)return;
+try{const pend=await LN.getPending();if(pend.notifications&&pend.notifications.length)await LN.cancel({notifications:pend.notifications.map(n=>({id:n.id}))});
+const list=[];Object.keys(REM).forEach((id,ix)=>{const c=remCfg(id);if(!c.on)return;const p=c.t.split(':'),hour=+p[0],minute=+p[1];
+if(id==='train')dy(S.profile).forEach(di=>list.push({id:100+di,title:'Темп',body:REM[id][2],schedule:{on:{weekday:(di+1)%7+1,hour,minute},allowWhileIdle:true}}));
+else list.push({id:ix+1,title:'Темп',body:REM[id][2],schedule:{on:{hour,minute},allowWhileIdle:true}})});
+if(list.length)await LN.schedule({notifications:list})}catch(e){toast('Не удалось запланировать уведомления')}}
+
+/* расширенная база упражнений: раздел|название|где|оборудование|ограничение|схема|реквизит|мышцы|совет|время */
+const BEN={sq:'Развивает силу и объём ног и ягодиц, повышает расход калорий.',hi:'Укрепляет заднюю поверхность бёдер, ягодицы и спину, улучшает осанку.',lg:'Тренирует ноги по отдельности, улучшает баланс и выравнивает силу.',pu:'Развивает грудь, плечи и трицепс, укрепляет верх тела.',pv:'Укрепляет плечи, руки и верх тела, делает его сильнее.',pl:'Укрепляет спину и бицепс, улучшает осанку.',pd:'Развивает широчайшие и бицепс, укрепляет верх спины.',co:'Укрепляет мышцы корпуса и стабилизирует позвоночник.',ca:'Развивает выносливость и помогает расходовать калории.'};
+const QH={db:'две бутылки воды или рюкзак с вещами',bb:'рюкзак, набитый вещами',band:'полотенце или ремень на дверной ручке',bar:'крепкий стол: «австралийские подтягивания» или перекладина в проёме',rope:'прыжки на месте, имитируя скакалку',bench:'диван или прочный стул',chair:'устойчивый стул'};
+(`sq|Сумо-присед с гантелью|hg|db|knee|squat|db|Квадрицепсы, ягодицы, приводящие мышцы|Стойка шире плеч, носки в стороны
+sq|Присед с паузой|hg||knee|squat||Квадрицепсы, ягодицы, кор|Пауза 2 секунды внизу
+sq|Присед со штангой на плечах|g|bb|knee|squat|bbback|Квадрицепсы, ягодицы, спина|Гриф на верхней части спины
+sq|Фронтальный присед|g|bb|knee|squat|bb|Квадрицепсы, кор|Локти высоко, корпус вертикально
+sq|Присед в тренажёре Смита|g||knee|squat||Квадрицепсы, ягодицы|Стопы чуть впереди грифа
+sq|Присед с рюкзаком|h|||squat||Квадрицепсы, ягодицы|Рюкзак с вещами прижмите к груди
+sq|Присед на одной ноге к стулу|h|chair|knee|squat|chair|Квадрицепсы, ягодицы, баланс|Садитесь на край стула на одной ноге
+sq|Присед-прыжок|hg||knee|jump||Ноги, ягодицы, сердце|Приземляйтесь мягко
+sq|Присед с гирей у груди|hg|db|knee|squat|db|Квадрицепсы, ягодицы, кор|Гиря или гантель у груди
+sq|Узкий присед|hg||knee|squat||Квадрицепсы|Стопы на ширине таза
+sq|Присед у стены|h||knee|squat||Квадрицепсы, ягодицы|Спина прижата, колени под 90°|30–60 сек
+sq|Жим ногами одной ногой|g||knee|legpress|machine|Квадрицепсы, ягодицы|Не выпрямляйте колено до конца
+sq|Гакк-присед|g||knee|legpress|machine|Квадрицепсы|Спина прижата к спинке
+hi|Ягодичный мостик на одной ноге|hg|||bridge|mat|Ягодицы, задняя поверхность бедра|Таз не заваливается
+hi|Хип-траст со штангой|g|bb||bridge|mat|Ягодицы, задняя поверхность бедра|Подбородок прижат, пауза вверху
+hi|Мостик с гантелью на тазу|hg|db||bridge|mat|Ягодицы|Вес на уровне таза
+hi|Гиперэкстензия|g|||superman||Разгибатели спины, ягодицы|Без переразгибания вверху
+hi|Становая тяга|g|bb|back|hinge|bb|Ягодицы, бёдра, спина|Гриф у ног, спина ровная
+hi|Сумо-становая тяга|g|bb|back|hinge|bb|Ягодицы, приводящие, спина|Широкая стойка
+hi|Румынская тяга на одной ноге|hg|db|back|hinge|db|Задняя поверхность бедра, баланс|Корпус и нога в одну линию
+hi|Махи гирей|hg|db|back|hinge|db|Ягодицы, задняя цепь|Толчок тазом, а не руками
+hi|Обратная гиперэкстензия|h|||superman|mat|Ягодицы, поясница|Поднимайте ноги плавно
+hi|Мостик с резиной|h|band||bridge|mat|Ягодицы|Резина над коленями
+hi|Отведение ноги назад в упоре|hg|||superman|mat|Ягодицы|Не прогибайте поясницу
+hi|Сумо-тяга с гантелью|hg|db|back|hinge|db|Ягодицы, бёдра|Гантель между ног
+hi|Сгибание ног в тренажёре|g|||bridge|mat|Задняя поверхность бедра|Медленное опускание
+lg|Выпады вперёд|hg||knee|lunge||Квадрицепсы, ягодицы|Шаг вперёд, корпус прямой
+lg|Боковые выпады|hg||knee|lunge||Приводящие, ягодицы|Таз назад, колено над стопой
+lg|Выпады с гантелями|hg|db|knee|lunge|db|Квадрицепсы, ягодицы|Гантели вдоль тела
+lg|Ходьба выпадами|hg||knee|lunge||Ноги, ягодицы, баланс|Шаги ровные
+lg|Реверанс-выпад|hg||knee|lunge||Ягодицы, приводящие|Нога заводится назад по диагонали
+lg|Шаг на возвышение|hg||knee|lunge||Квадрицепсы, ягодицы|Опорная нога делает усилие
+lg|Подъём на носки с гантелью|hg|db||calf|db|Икроножные|Пауза вверху
+lg|Подъём на носки на одной ноге|hg|||calf||Икроножные|Держитесь рукой за опору
+lg|Подъём на носки сидя|g|||calf||Камбаловидная мышца|Колени под 90°
+lg|Сплит-присед с гантелями|hg|db|knee|lunge|db|Квадрицепсы, ягодицы|Задняя нога почти статична
+lg|Прыжковые выпады|hg||knee|lunge||Ноги, ягодицы, сердце|Мягкое приземление
+pu|Отжимания с колен|h|||pushup|mat|Грудь, трицепс|Облегчённый вариант
+pu|Отжимания широким хватом|hg||shoulder|pushup|mat|Грудь, плечи|Ладони шире плеч
+pu|Алмазные отжимания|h||shoulder|pushup|mat|Трицепс, грудь|Ладони вместе под грудью
+pu|Отжимания с хлопком|h||shoulder|pushup|mat|Грудь, плечи, взрывная сила|Мягкое приземление рук
+pu|Жим гантелей на наклонной скамье|g|db|shoulder|bench|bench,db|Верх груди, плечи|Скамья 30–45°
+pu|Жим штанги на наклонной скамье|g|bb|shoulder|bench|bench,bb|Верх груди, плечи|Работайте со страховкой
+pu|Разводка гантелей лёжа|hg|db|shoulder|bench|bench,db|Грудь|Локти слегка согнуты
+pu|Жим в тренажёре на грудь|g|||bench||Грудь, трицепс, плечи|Лопатки сведены
+pu|Жим гантелей лёжа на полу|h|db|shoulder|bench|db|Грудь, трицепс|Локти касаются пола
+pu|Отжимания с опорой на возвышение|h|||pushup||Грудь, трицепс|Руки на устойчивой опоре
+pu|Пуловер с гантелью|hg|db|shoulder|bench|bench,db|Грудь, широчайшие|Руки почти прямые
+pu|Отжимания на брусьях|g|||dips||Грудь, трицепс|Корпус слегка наклонён вперёд
+pu|Отжимания в стойке у стены|h|||pushup||Плечи, трицепс|Начните с лёгкого угла
+pv|Жим гантелей сидя|g|db|shoulder|press|db|Плечи, трицепс|Спина прижата к спинке
+pv|Жим штанги стоя|g|bb|shoulder|press|bb|Плечи, трицепс, кор|Не прогибайте поясницу
+pv|Жим Арнольда|hg|db|shoulder|press|db|Плечи|Вращение ладоней по ходу жима
+pv|Тяга гантелей к подбородку|hg|db|shoulder|raise|db|Плечи, трапеции|Локти выше кистей
+pv|Подъём гантелей перед собой|hg|db||raise|db|Передняя дельта|Без раскачки
+pv|Разведение гантелей в наклоне|hg|db||raise|db|Задняя дельта|Корпус параллельно полу
+pv|Пике-отжимания|h||shoulder|pushupf|box|Плечи, трицепс|Таз высоко, голова между рук
+pv|Жим в тренажёре на плечи|g|||press||Плечи|Плавное движение
+pv|Махи в кроссовере|g|||raise||Средняя дельта|Лёгкий вес
+pv|Французский жим с гантелью|hg|db|shoulder|press|db|Трицепс|Локти смотрят вперёд
+pv|Разгибания рук на блоке|g|||press||Трицепс|Локти прижаты к корпусу
+pv|Сгибания рук с гантелями|hg|db||curl|db|Бицепс|Локти у корпуса
+pv|Молотковые сгибания|hg|db||curl|db|Бицепс, предплечья|Хват нейтральный
+pv|Подъём штанги на бицепс|g|bb||curl|bb|Бицепс|Без раскачки корпусом
+pv|Сгибания рук с резиной|h|band||curl|band|Бицепс|Резина под стопой
+pl|Тяга штанги в наклоне|g|bb|back|row|bb|Широчайшие, середина спины|Спина ровная
+pl|Тяга гантелей в наклоне двумя руками|hg|db|back|row|db|Спина, бицепс|Лопатки сводите
+pl|Тяга одной рукой на блоке|g|||crow||Широчайшие|Корпус неподвижен
+pl|Тяга в рычажном тренажёре|g|||crow||Середина спины|Грудь прижата к опоре
+pl|Австралийские подтягивания|h|||invrow||Спина, бицепс|Тело прямое, нужен крепкий стол
+pl|Тяга резины сидя|h|band||crow|band|Широчайшие|Лопатки сведены в конце
+pl|Шраги с гантелями|hg|db||raise|db|Трапеции|Плечи вверх без вращения
+pl|Тяга лица на блоке|g|||row||Задняя дельта|Локти выше кистей
+pl|Обратные разведения в тренажёре|g|||row||Задняя дельта|Лёгкий вес
+pl|Гребля на тренажёре|g|||crow||Спина, ноги, сердце|Толчок ногами, затем руками
+pd|Подтягивания обратным хватом|hg|bar||pullup|bar|Бицепс, широчайшие|Подбородок над перекладиной
+pd|Подтягивания широким хватом|hg|bar||pullup|bar|Широчайшие|Лопатки вниз и вместе
+pd|Негативные подтягивания|hg|bar||pullup|bar|Широчайшие, бицепс|Опускайтесь 4–5 секунд
+pd|Тяга верхнего блока узким хватом|g|||pulldown|pull|Широчайшие, бицепс|Тяните к груди
+pd|Тяга верхнего блока обратным хватом|g|||pulldown|pull|Бицепс, широчайшие|Локти вниз
+pd|Подтягивания в гравитроне|g|||pullup|bar|Широчайшие, бицепс|Подбирайте помощь
+pd|Пуловер на блоке|g|||pulldown|pull|Широчайшие|Руки почти прямые
+pd|Вис на турнике|hg|bar||pullup|bar|Хват, предплечья, плечи|Плечи от ушей|20–40 сек
+pd|Тяга резины сверху сидя|h|band||pulldown|band|Широчайшие|Закрепите резину над головой
+pd|Лодочка лёжа на животе|h|||superman|mat|Разгибатели спины|Поднимайте грудь и ноги
+co|Планка на локтях|hg|||plank|mat|Пресс, кор, плечи|Таз не провисает|30–60 сек
+co|Боковая планка|hg|||plank|mat|Косые мышцы живота|Корпус в одну линию|20–40 сек
+co|Планка с касанием плеч|hg|||plank|mat|Кор, плечи|Таз почти неподвижен
+co|Скалолаз|hg|||plank|mat|Пресс, плечи, сердце|Корпус ровный
+co|Велосипед|hg|||crunch|mat|Косые, прямая мышца живота|Поясница прижата
+co|Подъём коленей в висе|hg|bar||pullup|bar|Нижний пресс|Без раскачки
+co|Подъём ног в висе|hg|bar|back|pullup|bar|Нижний пресс|Медленное опускание
+co|Русские скручивания|hg|||crunch|mat|Косые мышцы|Поворот корпусом
+co|Мёртвый жук|h|||crunch|mat|Глубокий пресс|Поясница на полу
+co|Складка|hg|||crunch|mat|Пресс|Руки тянутся к стопам
+co|Обратные скручивания|hg|||crunch|mat|Нижний пресс|Таз отрывается от пола
+co|Планка с поднятой ногой|hg|||plank|mat|Кор, ягодицы|Таз ровно
+co|Колесо для пресса|hg||back|plank|mat|Пресс, плечи|Спина не провисает
+co|Дровосек на блоке|g|||press||Косые мышцы|Вращайте корпус, не руки
+ca|Бег трусцой|hg|||run||Ноги, сердце|Дыхание ровное|20–30 мин
+ca|Интервальный бег|hg|||run||Ноги, сердце|30 сек быстро, 60 сек спокойно|12–20 мин
+ca|Быстрая ходьба в горку|g|||run||Ягодицы, ноги, сердце|Наклон дорожки 6–10%|20–30 мин
+ca|Эллиптический тренажёр|g|||run||Всё тело, сердце|Мягко для суставов|20–30 мин
+ca|Гребной тренажёр|g|||crow||Спина, ноги, сердце|Сначала ноги, потом руки|12–20 мин
+ca|Степпер|g|||run||Ягодицы, ноги|Не опирайтесь на поручни|15–20 мин
+ca|Прыжки «звёздочка»|h||knee|jump||Всё тело, сердце|Мягкие приземления|8–12 мин
+ca|Берпи|hg||knee|jump||Всё тело, сердце|Держите корпус под контролем|6–10 мин
+ca|Бег на месте с высоким коленом|h|||run||Ноги, сердце|Колени выше бёдер|8–12 мин
+ca|Прыжки на скакалке|hg|rope||jump|rope|Икры, сердце, координация|Прыжки низкие|8–12 мин
+ca|Скалолаз в темпе|hg|||plank|mat|Кор, сердце|Быстро, но ровно|6–10 мин
+ca|Танцевальная кардио-тренировка|h|||jump||Всё тело, сердце|Любое видео или плейлист|20–30 мин
+ca|Плавание|g|||run||Всё тело, сердце|Равномерный темп|20–30 мин
+ca|Прогулка быстрым шагом|hg|||run||Ноги, сердце|Шаг широкий, дыхание ровное|30–40 мин`).split('\n').forEach(l=>{const a=l.split('|');if(!POOL[a[0]]||POOL[a[0]].some(e=>e.n===a[1]))return;const tm=a[9]||'';
+POOL[a[0]].push({n:a[1],h:/h/.test(a[2])?1:0,g:/g/.test(a[2])?1:0,a:a[4]||undefined,t:a[8],tm:tm||undefined,one:/мин/.test(tm)?1:undefined});
+if(a[3])EQ[a[1]]=[a[3],QH[a[3]]];EXI[a[1]]=[a[5],a[7],BEN[a[0]]];EP[a[1]]=a[6]||''});
+(function(){const have={};ACTS.forEach(x=>have[x[0]]=1);Object.keys(POOL).forEach(k=>POOL[k].forEach(e=>{if(have[e.n]||!EXI[e.n])return;have[e.n]=1;const kind=e.tm?(/мин/.test(e.tm)?'time':'sec'):((EQ[e.n]||[''])[0]==='db'||(EQ[e.n]||[''])[0]==='bb'?'w':'reps');ACTS.push([e.n,kind,EXI[e.n][0]]);AP[e.n]=EP[e.n]||''}))})();
+
+/* звуки интерфейса: короткие тихие щелчки */
+let AC=null;
+function snd(k){if(S.sound===false)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;AC=AC||new C();if(AC.state==='suspended')AC.resume();const t0=AC.currentTime,P={tap:[[880,.035]],nav:[[520,.04],[780,.05]],add:[[620,.05],[930,.08]],del:[[460,.05],[300,.08]],tick:[[1180,.03]]}[k]||[[880,.035]];
+P.forEach((n,i)=>{const o=AC.createOscillator(),g=AC.createGain(),t=t0+i*.055;o.type='sine';o.frequency.value=n[0];g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+n[1]);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+n[1]+.02)})}catch(e){}}
+if(document.addEventListener){document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('button,summary,input[type=checkbox],h2');if(!b)return;const oc=(b.getAttribute&&b.getAttribute('onclick'))||'';let k='tap';
+if(b.classList&&b.classList.contains('del'))k='del';else if((b.closest&&b.closest('#dr'))||b.id==='bg')k='nav';else if(/addMeal|addLog|addExtra|addCustom|setW|setM|water\(|saveP|setB|swap\(|wo\('done'\)|planStart|setLoc/.test(oc))k='add';else if(b.type==='checkbox')k='tick';snd(k)},true);
+document.addEventListener('change',e=>{if(e.target&&e.target.tagName==='SELECT')snd('tick')},true)}
+function setSnd(v){S.sound=v;save();if(v)snd('add')}
+function soundCard(){return `<div class="card"><h2>Звук</h2><label class="cb" style="margin:0;color:var(--ink);font-size:16px"><input type="checkbox" ${S.sound===false?'':'checked'} onchange="setSnd(this.checked)"><span>Звуки интерфейса (тихие щелчки)</span></label></div>`}
+(function(){
+const RM=['Узкий присед','Присед с гирей у груди','Присед с рюкзаком','Румынская тяга со штангой','Сумо-тяга с гантелью','Сумо-становая тяга','Выпады с гантелями','Выпад в Смите','Подъём на носки с гантелью','Мостик с гантелью на тазу','Мостик с резиной','Лодочка лёжа на животе','Тяга штанги в наклоне','Тяга гантелей в наклоне двумя руками','Жим гантелей сидя','Планка на локтях','Скалолаз в темпе','Прыжки на скакалке','Прогулка быстрым шагом','Махи в кроссовере','Обратные разведения в тренажёре','Тяга резины сидя','Тяга верхнего блока узким хватом','Тяга верхнего блока обратным хватом','Молотковые сгибания','Тяга резины сверху сидя','Австралийские подтягивания'];
+const RN={'Гоблет-присед с гантелью':'Гоблет-присед','Румынская тяга с гантелями':'Румынская тяга','Жим гантелей стоя':'Жим гантелей над головой','Быстрая ходьба или бег':'Быстрая ходьба','Присед со штангой на плечах':'Присед со штангой','Скакалка, интервалы 30/30':'Прыжки на скакалке','Сплит-присед с гантелями':'Сплит-присед'};
+const RA={'Пресс (скручивания)':'Скручивания','Выпады':'Выпады назад','Жим стоя':'Жим штанги стоя','Жим лёжа':'Жим штанги лёжа','Сгибание на бицепс':'Сгибания рук с гантелями','Ходьба':'Быстрая ходьба','Скакалка':'Прыжки на скакалке','Бег':'Бег трусцой','Приседания со штангой':'Присед со штангой'};
+RM.forEach(n=>{for(const k in POOL)POOL[k]=POOL[k].filter(e=>e.n!==n);[EXI,EP,EQ,AP].forEach(m=>delete m[n])});
+const ren=Object.assign({},RN,RA);
+for(const o in ren){const n=ren[o];for(const k in POOL)POOL[k].forEach(e=>{if(e.n===o)e.n=n});[EXI,EP,EQ,AP].forEach(m=>{if(o in m&&!(n in m)){m[n]=m[o]}if(o in m)delete m[o]})}
+const seen={},out=[];ACTS.forEach(a=>{if(RM.indexOf(a[0])>=0)return;if(ren[a[0]])a[0]=ren[a[0]];if(seen[a[0]])return;seen[a[0]]=1;out.push(a)});ACTS.length=0;out.forEach(a=>ACTS.push(a));
+EP['Присед в тренажёре Смита']='bbback';EP['Присед со штангой']='bbback';
+})();
+Object.keys(EXI).forEach(n=>{const k=NAK(n);EXI[n][0]=k||null});ACTS.forEach(a=>{a[2]=NAK(a[0])||null});
+load();render();tick();syncNotifs();
+</script>
+</body>
+</html>
